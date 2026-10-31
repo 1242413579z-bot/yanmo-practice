@@ -1,4 +1,4 @@
-/* ============================================================================
+﻿/* ============================================================================
    practice/js/core/store.js — 本地状态与统计（localStorage，无网络）
    ========================================================================== */
 (function () {
@@ -266,6 +266,7 @@
   function exportJSON() {
     var copy = JSON.parse(JSON.stringify(state));
     if (copy.settings && copy.settings.ai) copy.settings.ai.key = '';
+    if (copy.settings && copy.settings.cloud) copy.settings.cloud.token = '';;
     return JSON.stringify({ app: 'yanmo-practice', version: 1, exportedAt: new Date().toISOString(), state: copy }, null, 1);
   }
   function importJSON(str, opts) {
@@ -375,3 +376,4 @@
     passScore: passScore
   };
 })();
+
