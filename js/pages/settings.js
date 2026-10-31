@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    practice/js/pages/settings.js — 设置与说明
    ============================================================ */
 (function () {
@@ -18,6 +18,7 @@
     page.appendChild(themeCard());
     page.appendChild(aiCard());
     page.appendChild(practiceCard());
+    page.appendChild(cloudCard());
     page.appendChild(syncCard());
     page.appendChild(installCard());
     page.appendChild(aboutCard());
@@ -140,6 +141,74 @@
     return card;
   }
 
+  function cloudCard() {
+    var card = section('云同步（GitHub Gist，可选）', '两台设备共用一个私有 Gist；Token 只存本机，不会出现在网页源码或仓库里');
+    card.appendChild(UI.el('div', { class: 'tiny faint', style: { marginBottom: '10px', lineHeight: '1.8' } },
+      '在 GitHub → Settings → Developer settings → Personal access tokens 生成 fine-grained token，只勾「Gists: Read and write」（不需要任何仓库权限）。把 Token 填在这里，首次点「创建/上传到云」会自动建一个私密 Gist；另一台设备填同一个 Token 和 Gist ID，点「从云端合并」。'));
+    var cfg = S.settings.cloud || {};
+    var tokenIn = UI.el('input', { class: 'input', type: 'password', value: cfg.token || '', placeholder: 'GitHub Token（只勾 Gists 读写）', style: { width: '100%' }, autocomplete: 'off' });
+    var gistIn = UI.el('input', { class: 'input', value: cfg.gistId || '', placeholder: 'Gist ID（首次留空，自动创建后自动填入）', style: { width: '100%', marginTop: '8px' } });
+    var status = UI.el('div', { class: 'tiny faint', style: { marginTop: '8px' } }, cfg.gistId ? '已配置 Gist：' + cfg.gistId : '尚未配置云同步');
+    function saveCfg() {
+      S.setSettings({ cloud: { token: String(tokenIn.value || '').trim(), gistId: String(gistIn.value || '').trim() } });
+    }
+    function ghApi(path, opts) {
+      var token = String(tokenIn.value || '').trim();
+      if (!token) return Promise.reject(new Error('请先填 GitHub Token'));
+      opts = opts || {};
+      opts.headers = { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' };
+      return fetch('https://api.github.com' + path, opts).then(function (r) {
+        if (!r.ok) return r.text().then(function (t) { throw new Error('GitHub ' + r.status + '：' + t.slice(0, 120)); });
+        return r.json();
+      });
+    }
+    function upload() {
+      saveCfg();
+      var token = String(tokenIn.value || '').trim();
+      if (!token) { UI.toast('请先填 GitHub Token', 'bad'); return; }
+      var body = JSON.stringify({ description: '研墨 · 练习记录同步（私密）', public: false, files: { 'yanmo-sync.json': { content: S.exportJSON() } } });
+      var gid = String(gistIn.value || '').trim();
+      var req = gid ? ghApi('/gists/' + gid, { method: 'PATCH', body: body }) : ghApi('/gists', { method: 'POST', body: body });
+      status.textContent = '正在上传…';
+      req.then(function (res) {
+        if (!gid && res.id) { gistIn.value = res.id; saveCfg(); status.textContent = '已创建并上传：' + res.id; }
+        else status.textContent = '已上传 ' + new Date().toLocaleTimeString();
+        UI.toast('已上传到云端', 'ok');
+      }).catch(function (e) { status.textContent = '上传失败：' + e.message; UI.toast('上传失败：' + e.message, 'bad'); });
+    }
+    function download() {
+      var gid = String(gistIn.value || '').trim();
+      if (!gid) { UI.toast('请先填 Gist ID', 'bad'); return; }
+      saveCfg();
+      status.textContent = '正在下载…';
+      ghApi('/gists/' + gid).then(function (res) {
+        var f = res.files && res.files['yanmo-sync.json'];
+        if (!f || !f.content) throw new Error('该 Gist 里没有 yanmo-sync.json');
+        S.importJSON(f.content, { merge: true });
+        UI.toast('已合并云端记录，正在刷新…', 'ok');
+        location.reload();
+      }).catch(function (e) { status.textContent = '下载失败：' + e.message; UI.toast('下载失败：' + e.message, 'bad'); });
+    }
+    var upBtn = UI.el('button', { class: 'btn btn--gold' }, '创建/上传到云');
+    upBtn.addEventListener('click', upload);
+    var downBtn = UI.el('button', { class: 'btn' }, '从云端合并');
+    downBtn.addEventListener('click', download);
+    var saveBtn = UI.el('button', { class: 'btn' }, '保存设置');
+    saveBtn.addEventListener('click', function () { saveCfg(); status.textContent = '已保存本机配置'; UI.toast('已保存', 'ok'); });
+    var clearBtn = UI.el('button', { class: 'btn btn--danger' }, '清除 Token');
+    clearBtn.addEventListener('click', function () {
+      tokenIn.value = ''; gistIn.value = '';
+      S.setSettings({ cloud: { token: '', gistId: '' } });
+      status.textContent = '已清除本机 Token';
+      UI.toast('已清除');
+    });
+    card.appendChild(tokenIn);
+    card.appendChild(gistIn);
+    card.appendChild(UI.el('div', { class: 'btn-row', style: { marginTop: '10px' } }, [upBtn, downBtn, saveBtn, clearBtn]));
+    card.appendChild(status);
+    return card;
+  }
+
   function syncCard() {
     var card = section('手机 ↔ 电脑同步', '数据只在本机；用同步码/文件在设备间合并，不经过服务器');
     card.appendChild(UI.el('div', { class: 'tiny faint', style: { marginBottom: '10px', lineHeight: '1.8' } },
@@ -256,5 +325,6 @@
     return card;
   }
 })();
+
 
 
