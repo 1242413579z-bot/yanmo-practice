@@ -1,0 +1,358 @@
+/* ============================================================================
+   practice/css/module-ipa.css — 国际音标模块（所有类前缀 ip-）
+   复用 components.css 的 .palette / .input / .textarea / .btn / .badge / .chip 基座，
+   只在此处补充模块专有布局与状态样式。
+   第五轮反馈：面板默认收起（40px 标题栏）、展开后 ≤230px（窄屏 ≤34vh）、
+   文档流内元素（不 sticky / 不 fixed），不遮挡题目。
+   ========================================================================== */
+
+/* ---------- 1. 容器 ---------- */
+.ip-wrap { display: flex; flex-direction: column; gap: 14px; }
+.ip-global-hint {
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--ink-faint);
+  border-left: 2px solid var(--line-strong);
+  padding: 1px 0 1px 9px;
+}
+
+/* ---------- 2. 音标面板：默认收起，展开后内部滚动，不遮挡题目 ---------- */
+.ip-palette {
+  position: static;
+  z-index: auto;
+  width: 100%;
+  max-height: none;
+  animation: none;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+.ip-palette:not(.is-collapsed) { max-height: 230px; }
+.ip-palette.is-collapsed { max-height: none; }
+
+.ip-palette-hd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 3px 10px 3px 12px;
+  border-bottom: 1px solid transparent;
+}
+.ip-palette:not(.is-collapsed) .ip-palette-hd { border-bottom-color: var(--line); }
+.ip-palette-titlebtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 2px 4px;
+  font-family: var(--font-serif);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.ip-palette-titlebtn:hover { color: var(--accent); }
+.ip-palette-state {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gold);
+}
+.ip-target {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: right;
+  font-size: 11.5px;
+  color: var(--ink-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ip-palette-collapse { flex: 0 0 auto; }
+.ip-palette.is-collapsed .ip-palette-collapse { display: none; }
+.ip-palette.is-collapsed .ip-palette-body,
+.ip-palette.is-collapsed .ip-palette-ft { display: none; }
+
+.ip-palette-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 7px 12px 9px;
+  overflow-y: auto;
+}
+.ip-palette-ft {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px 12px 8px;
+  border-top: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.ip-op { min-height: 30px; padding: 0 12px; font-size: 12.5px; }
+
+/* 面板内部：声调 + 附加符号一行；元音 | 辅音 两栏 */
+.ip-strip { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 6px 22px; }
+.ip-strip .palette-group,
+.ip-cols .palette-group { margin-bottom: 0; }
+.ip-strip .palette-keys,
+.ip-cols .palette-keys { gap: 4px; }
+.ip-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 2px 18px;
+  align-items: start;
+}
+.ip-col { min-width: 0; }
+.ip-col .palette-group { margin-bottom: 7px; }
+.ip-col .palette-group:last-child { margin-bottom: 0; }
+.ip-palette .palette-glabel { font-size: 10px; letter-spacing: 0.08em; margin-bottom: 3px; }
+.ip-palette .palette-key {
+  min-width: 32px;
+  height: 30px;
+  font-size: 15px;
+  padding: 0 6px;
+  border-radius: 7px;
+}
+.ip-palette .ip-tone-key {
+  min-width: 46px;
+  height: 34px;
+  padding: 0 7px;
+  flex-direction: column;
+  gap: 0;
+  line-height: 1.05;
+}
+.ip-tone-num { font-size: 13px; font-weight: 600; font-family: var(--font-mono); letter-spacing: 0.03em; }
+.ip-tone-name { font-size: 8.5px; color: var(--ink-faint); }
+
+/* ---------- 3. 注音卡片 ---------- */
+.ip-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(212px, 1fr));
+  gap: 12px;
+}
+.ip-items--wide { grid-template-columns: 1fr; }
+.ip-item {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 12px 13px 10px;
+  box-shadow: var(--shadow-1);
+  transition: border-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
+}
+.ip-item.is-focus {
+  border-color: color-mix(in srgb, var(--gold) 62%, var(--line));
+  box-shadow: 0 0 0 3px var(--gold-soft), var(--shadow-1);
+}
+.ip-item.is-filled { border-color: color-mix(in srgb, var(--jade) 38%, var(--line)); }
+.ip-item-hd { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; min-width: 0; }
+.ip-item-no {
+  flex: 0 0 auto;
+  font-family: var(--font-num);
+  font-size: 11px;
+  color: var(--ink-faint);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 6px;
+  line-height: 18px;
+}
+.ip-hanzi {
+  font-family: var(--font-serif);
+  font-size: 30px;
+  line-height: 1.25;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  flex: 1;
+  min-width: 0;
+  word-break: break-all;
+}
+.ip-hanzi--long { font-size: 20px; letter-spacing: 0.02em; line-height: 1.45; }
+.ip-item-badge { margin-left: auto; flex: 0 0 auto; }
+.ip-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 8px;
+  margin-bottom: 5px;
+  min-height: 17px;
+}
+.ip-syl {
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: var(--ink-soft);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 7px;
+  line-height: 17px;
+}
+.ip-input {
+  width: 100%;
+  min-height: 46px;
+  padding: 8px 10px;
+  font-size: 17px;
+  letter-spacing: 0.03em;
+}
+.ip-item-note { margin-top: 6px; font-size: 11px; line-height: 1.5; }
+
+/* ---------- 4. 音位小题 ---------- */
+.ip-subs { display: flex; flex-direction: column; gap: 12px; }
+.ip-subs-title {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ip-subs-title::before { content: ""; width: 14px; height: 2px; background: var(--accent); border-radius: 2px; }
+.ip-sub {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  padding: 12px 14px;
+}
+.ip-sub-q {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 7px;
+}
+.ip-sub-input { min-height: 86px; background: var(--surface); line-height: 1.7; }
+.ip-sub-meta { margin-top: 5px; font-size: 11px; }
+
+/* ---------- 5. 标准答案对照（解析区） ---------- */
+.ip-solution { display: flex; flex-direction: column; gap: 10px; }
+.ip-sol-row {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  padding: 9px 12px;
+}
+.ip-sol-hd { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; }
+.ip-sol-hanzi { font-family: var(--font-serif); font-size: 19px; color: var(--ink); }
+.ip-sol-std { font-size: 15px; color: var(--ink); }
+.ip-sol-alt { margin-top: 4px; font-size: 11.5px; line-height: 1.5; }
+.ip-sol-user {
+  margin-top: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 13.5px;
+}
+.ip-sol-user.is-ok { color: var(--jade); }
+.ip-sol-user.is-bad { color: var(--bad); }
+.ip-sol-tag {
+  font-size: 11px;
+  line-height: 18px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  color: var(--ink-soft);
+}
+.ip-sol-subtitle { margin-top: 4px; font-family: var(--font-serif); font-size: 15px; }
+.ip-sol-sub {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  padding: 9px 12px;
+}
+.ip-sol-q { font-size: 13.5px; color: var(--ink); line-height: 1.65; }
+.ip-sol-ref { margin-top: 4px; font-size: 12.5px; color: var(--ink-soft); line-height: 1.7; white-space: pre-wrap; }
+.ip-sol-kps { margin-top: 6px; }
+
+/* ---------- 6. 逐项判分对照（模块专属结果细节） ---------- */
+.ip-detail { display: flex; flex-direction: column; gap: 10px; }
+.ip-detail-title { font-family: var(--font-serif); font-size: 15px; color: var(--ink); }
+.ip-detail-item {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  padding: 10px 12px;
+}
+.ip-detail-top { display: flex; align-items: center; gap: 8px; }
+.ip-detail-hanzi {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-serif);
+  font-size: 17px;
+  color: var(--ink);
+  word-break: break-all;
+}
+.ip-detail-q { font-family: var(--font-sans); font-size: 13px; line-height: 1.6; }
+.ip-detail-score {
+  flex: 0 0 auto;
+  font-family: var(--font-num);
+  font-size: 12px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  color: var(--ink-soft);
+}
+.ip-detail-score.is-full { background: var(--jade-soft); color: var(--jade); }
+.ip-detail-score.is-low { background: var(--accent-soft); color: var(--accent); }
+.ip-detail-line { display: flex; flex-wrap: wrap; gap: 4px 8px; margin-top: 4px; font-size: 13px; }
+.ip-detail-lab { flex: 0 0 auto; font-size: 11px; color: var(--ink-faint); min-width: 26px; }
+.ip-detail-syls { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+.ip-syl-chip {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-2);
+  padding: 3px 7px;
+  font-size: 13px;
+  color: var(--ink);
+}
+.ip-syl-chip.is-missing { border-style: dashed; color: var(--bad); }
+.ip-syl-arrow { color: var(--ink-soft); }
+.ip-el { font-size: 10px; line-height: 15px; padding: 0 3px; border-radius: 4px; }
+.ip-el.is-ok { color: var(--jade); background: var(--jade-soft); }
+.ip-el.is-bad { color: var(--bad); background: var(--accent-soft); }
+.ip-detail-note { margin-top: 4px; font-size: 11px; color: var(--gold); }
+.ip-detail-stats { margin-top: 4px; font-size: 11px; color: var(--ink-faint); }
+.ip-detail-codes { margin-top: 6px; }
+.ip-code { font-size: 11px; }
+.ip-detail-subtitle { font-family: var(--font-serif); font-size: 14px; color: var(--ink); }
+.ip-detail-kps { margin-top: 5px; }
+.ip-kp-hit { color: var(--jade); border-color: color-mix(in srgb, var(--jade) 40%, var(--line)); }
+.ip-kp-miss { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 40%, var(--line)); }
+
+/* ---------- 7. 响应式 ---------- */
+@media (max-width: 760px) {
+  .ip-items { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+  .ip-hanzi { font-size: 26px; }
+  .ip-hanzi--long { font-size: 18px; }
+}
+
+@media (max-width: 620px) {
+  .ip-palette:not(.is-collapsed) { max-height: 34vh; }
+  .ip-palette-hd { min-height: 40px; padding: 3px 8px; gap: 6px; }
+  .ip-palette-titlebtn { font-size: 12.5px; }
+  .ip-target { font-size: 10.5px; }
+  .ip-palette-body { padding: 6px 10px 8px; }
+  .ip-palette-ft { padding: 5px 10px 7px; gap: 6px; }
+  .ip-cols { grid-template-columns: 1fr; }
+  .ip-palette .palette-key { min-width: 40px; height: 40px; font-size: 17px; }
+  .ip-palette .ip-tone-key { min-width: 56px; height: 44px; }
+  .ip-items { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .ip-items--wide { grid-template-columns: 1fr; }
+  .ip-hanzi { font-size: 24px; }
+  .ip-hanzi--long { font-size: 17px; }
+  .ip-input { font-size: 16px; }
+  .ip-item { padding: 10px 11px 9px; }
+}
+@media (max-width: 380px) {
+  .ip-items { grid-template-columns: 1fr; }
+}
