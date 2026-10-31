@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#F4EEE3"/>
+  <rect x="112" y="112" width="288" height="288" rx="52" fill="#A6392B"/>
+  <text x="256" y="268" font-family="Songti SC, STSong, SimSun, serif" font-size="112" fill="#F4EEE3" text-anchor="middle" font-weight="700">研</text>
+  <text x="256" y="384" font-family="Songti SC, STSong, SimSun, serif" font-size="112" fill="#F4EEE3" text-anchor="middle" font-weight="700">墨</text>
+</svg>
