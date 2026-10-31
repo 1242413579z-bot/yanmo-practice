@@ -1,0 +1,407 @@
+/* ============================================================================
+   practice/css/module-translate.css — 古文翻译模块样式（前缀 tr-）
+   只加本模块专有类；设计令牌全部来自 css/base.css，组件基座来自 components.css。
+   ========================================================================== */
+
+/* ---------------- 1. 编辑器：原文 + 译文 ---------------- */
+
+.tr-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tr-source {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--gold) 6%, var(--surface)), var(--surface-2));
+  border-color: color-mix(in srgb, var(--gold) 26%, var(--line));
+}
+
+.tr-source::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 2px;
+  border-radius: 0 2px 2px 0;
+  background: linear-gradient(180deg, var(--gold-2), var(--gold));
+  opacity: 0.75;
+}
+
+.tr-source-hd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+}
+
+.tr-panel-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--ink-faint);
+}
+
+/* 原文：宋体、17–19px、行高 1.9（契约 §6.5） */
+.tr-source-text {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  white-space: pre-line;      /* 「逐句拆行」用换行符展示，不改数据 */
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.tr-writing {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 译文输入：自适应高度（JS 设 height），最小 160px */
+.tr-input {
+  min-height: 160px;
+  font-size: 15.5px;
+  line-height: 1.85;
+  resize: none;
+  overflow-y: auto;
+}
+
+.tr-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 0 2px;
+}
+
+.tr-count {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-size: 12.5px;
+  color: var(--ink-faint);
+}
+
+.tr-tools {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tr-split {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  user-select: none;
+}
+
+.tr-split:hover { color: var(--ink); }
+
+.tr-split .switch {
+  width: 38px;
+  height: 22px;
+  flex-basis: 38px;
+}
+
+.tr-split .switch i::after {
+  width: 16px;
+  height: 16px;
+}
+
+.tr-split .switch input:checked + i::after {
+  transform: translateX(16px);
+}
+
+.tr-split-label { letter-spacing: 0.02em; }
+
+/* ---------------- 2. 解析区：参考译文 / 采分点表 / 我的译文 ---------------- */
+
+.tr-solution {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* app 的解析区本身已是 .card（见 app.js toggleSolution），内层卡片压平，避免「卡中卡」 */
+.tr-solution .card {
+  background: var(--surface-2);
+  border-color: var(--line);
+  box-shadow: none;
+}
+
+.tr-refcard .card-title::before,
+.tr-pointscard .card-title::before,
+.tr-mine .card-title::before {
+  content: "";
+  width: 3px;
+  height: 15px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--gold-2), var(--gold));
+  flex: 0 0 auto;
+}
+
+.tr-refbody {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.tr-refseg {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  font-family: var(--font-serif);
+  font-size: 17px;
+  line-height: 1.9;
+  color: var(--ink);
+}
+
+.tr-segno {
+  flex: 0 0 auto;
+  font-family: var(--font-num);
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--gold);
+  background: var(--gold-soft);
+  border: 1px solid color-mix(in srgb, var(--gold) 26%, transparent);
+  border-radius: 5px;
+  padding: 0 5px;
+  transform: translateY(-1px);
+}
+
+.tr-refseg-text { min-width: 0; }
+
+.tr-empty {
+  color: var(--ink-faint);
+  font-size: 13.5px;
+}
+
+.tr-points-sum {
+  margin: -2px 0 10px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+.tr-tablewrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tr-points { min-width: 480px; }
+
+.tr-points th:nth-child(1) { width: 30%; }
+.tr-points th:nth-child(2) { width: 40%; }
+.tr-points th:nth-child(3) { width: 30%; }
+
+.tr-points .tr-seg {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.tr-points .tr-refcell {
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.7;
+  word-break: break-word;
+}
+
+.tr-point.is-hit .tr-statuscell {
+  background: color-mix(in srgb, var(--jade) 6%, transparent);
+}
+
+.tr-point.is-miss .tr-statuscell {
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+
+.tr-point.is-hit .tr-seg { color: var(--ink); }
+
+.tr-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tr-mark--hit { color: var(--jade); }
+.tr-mark--miss { color: var(--accent); }
+
+.tr-kw {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--ink-faint);
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.tr-miss-hint {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+
+/* 用户译文（只读对照） */
+.tr-usertext {
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--ink);
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--surface-2);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+
+.tr-usertext.is-empty {
+  color: var(--ink-faint);
+  border-style: dashed;
+  background: transparent;
+}
+
+.tr-mine .hint { margin-top: 8px; }
+
+/* ---------------- 3. 判分结果细节：命中 / 漏译 + AI 提示 ---------------- */
+
+.tr-result-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tr-rd-hd {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.tr-rd-hd b {
+  font-family: var(--font-num);
+  font-size: 18px;
+  color: var(--ink);
+}
+
+.tr-rd-hd-label { font-weight: 600; color: var(--ink); }
+
+.tr-rd-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.tr-rd-col {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  padding: 10px 12px;
+}
+
+.tr-rd-col--hit {
+  border-color: color-mix(in srgb, var(--jade) 30%, var(--line));
+  background: color-mix(in srgb, var(--jade) 5%, var(--surface));
+}
+
+.tr-rd-col--miss {
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--line));
+  background: color-mix(in srgb, var(--accent) 4%, var(--surface));
+}
+
+.tr-rd-coltitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.tr-rd-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 10.5px;
+  line-height: 1;
+  color: var(--surface);
+  flex: 0 0 auto;
+}
+
+.tr-rd-col--hit .tr-rd-ico { background: var(--jade); }
+.tr-rd-col--miss .tr-rd-ico { background: var(--accent); }
+
+.tr-rd-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.tr-rd-item {
+  padding-left: 8px;
+  border-left: 2px solid var(--line-strong);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.tr-rd-col--hit .tr-rd-item { border-left-color: color-mix(in srgb, var(--jade) 55%, var(--line)); }
+.tr-rd-col--miss .tr-rd-item { border-left-color: color-mix(in srgb, var(--accent) 50%, var(--line)); }
+
+.tr-rd-seg {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  margin-right: 6px;
+  color: var(--ink);
+}
+
+.tr-rd-ref {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.tr-rd-tip {
+  display: block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: var(--accent);
+}
+
+.tr-rd-empty {
+  font-size: 12.5px;
+  color: var(--ink-faint);
+}
+
+.tr-aihint { margin-top: 2px; }
+
+/* ---------------- 4. 窄屏 ---------------- */
+
+@media (max-width: 620px) {
+  .tr-source-text { font-size: 17px; }
+  .tr-refseg { font-size: 16px; }
+  .tr-rd-grid { grid-template-columns: 1fr; }
+  .tr-tools { margin-left: 0; width: 100%; justify-content: space-between; }
+  .tr-points { min-width: 420px; }
+}
