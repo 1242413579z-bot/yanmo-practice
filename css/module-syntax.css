@@ -1,0 +1,982 @@
+/* ============================================================================
+   practice/css/module-syntax.css — 句法分析模块样式（类名前缀统一 .sx-）
+   依赖 css/base.css 设计令牌；复用 components.css 的 .btn/.seg/.palette/.tag 等。
+   布局：单行 flex（超出横向滚动），刀位竖线 + 竖排关系标签；分层模式嵌套块轮廓。
+   ========================================================================== */
+
+/* ---------- 1. 外壳 ---------- */
+.sx-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  max-width: 100%;
+}
+.sx-editor > * { min-width: 0; max-width: 100%; }
+
+.sx-head { display: flex; align-items: flex-start; gap: 10px; }
+.sx-hint {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  padding-left: 11px;
+  position: relative;
+}
+.sx-hint::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.42em;
+  bottom: 0.42em;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: 0.65;
+}
+
+/* 句子舞台 */
+.sx-stage {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+}
+.sx-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+  padding-bottom: 2px;
+}
+.sx-scroll::-webkit-scrollbar { height: 7px; }
+.sx-scroll::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 6px; }
+
+.sx-selhint {
+  padding: 7px 14px 9px;
+  border-top: 1px dashed var(--line);
+  font-size: 11.5px;
+  color: var(--ink-faint);
+  min-height: 28px;
+  line-height: 1.5;
+}
+.sx-selhint:empty { display: none; }
+
+/* ---------- 2. 句子与落刀位 ---------- */
+.sx-line {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  position: relative;
+  width: max-content;
+  min-width: 100%;
+  padding: 12px 16px 26px;
+  font-family: var(--font-serif);
+  font-size: clamp(21px, 2.7vw, 29px);
+  line-height: 1.3;
+  letter-spacing: 0;
+  color: var(--ink);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.sx-line--whole { cursor: default; }
+/* 句子行不渲染关系名：不需要为竖排标签预留高度 */
+.sx-line.is-empty { padding-bottom: 22px; }
+
+.sx-char {
+  flex: 0 0 auto;
+  width: 1.1em;
+  text-align: center;
+  line-height: 1.3;
+  position: relative;
+  z-index: 1;
+}
+
+/* 落刀位：默认是一条看不见的窄缝，hover 显示朱砂虚线 */
+.sx-slot {
+  flex: 0 0 auto;
+  position: relative;
+  display: block;
+  width: 0.3em;
+  min-width: 9px;
+  height: 1.3em;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  z-index: 2;
+  border-radius: 5px;
+  transition: background var(--t-fast) var(--ease);
+}
+/* 热区：移动端命中宽度 ≥ 28px */
+.sx-slot::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  transform: translateX(-50%);
+  width: 28px;
+  height: calc(1.3em + 8px);
+  border-radius: 7px;
+}
+/* 落刀位提示：默认一条很淡的短虚线（可发现性），hover / 聚焦变朱砂长虚线 */
+.sx-slot::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0.36em;
+  height: 0.56em;
+  border-left: 1.5px dashed var(--accent-2);
+  transform: translateX(-50%);
+  opacity: 0.34;
+  transition: opacity var(--t-fast) var(--ease), height var(--t-fast) var(--ease), top var(--t-fast) var(--ease);
+  pointer-events: none;
+}
+.sx-slot.is-active:hover::after,
+.sx-slot.is-active:focus-visible::after {
+  top: 0.06em;
+  height: 1.18em;
+  opacity: 0.95;
+}
+.sx-slot.is-active:hover { background: var(--accent-soft); }
+.sx-block--leaf.is-selected .sx-slot::after { opacity: 0.5; }
+.sx-block--leaf:hover .sx-slot.is-static::after { opacity: 0.75; }
+.sx-slot.is-static { cursor: pointer; }
+.sx-slot.is-cut::after { display: none; }
+.sx-slot.is-cut { background: none; }
+.sx-slot.is-cut:hover,
+.sx-slot.is-palette-open {
+  background: var(--accent-soft);
+}
+
+/* 已落的刀：朱砂竖线 + 小圆点（关系名只在层次图括号上出现） */
+.sx-cutline {
+  position: absolute;
+  left: 50%;
+  top: 0.06em;
+  height: 1.18em;
+  width: 0;
+  border-left: 2px solid var(--accent);
+  border-radius: 2px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.sx-cutline::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -3.5px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+/* 刀位小圆点：句子行唯一的关系提示（不写字），点它改关系 */
+.sx-cutdot {
+  position: absolute;
+  left: 50%;
+  top: calc(1.3em + 5px);
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.72;
+  transition: transform var(--t-fast) var(--ease), opacity var(--t-fast) var(--ease);
+  pointer-events: none;
+}
+.sx-slot.is-cut:hover .sx-cutdot,
+.sx-slot.is-palette-open .sx-cutdot {
+  transform: scale(1.6);
+  opacity: 1;
+}
+.sx-rel {
+  position: absolute;
+  left: 50%;
+  top: calc(1.3em + 6px);
+  transform: translateX(-50%);
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  color: var(--accent);
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--line));
+  border-radius: 6px;
+  padding: 3px 2px;
+  z-index: 3;
+  pointer-events: auto;
+}
+.sx-slot.is-cut:hover .sx-rel,
+.sx-slot.is-palette-open .sx-rel {
+  background: var(--accent);
+  color: #fff8ef;
+  border-color: transparent;
+}
+html[data-theme="dark"] .sx-slot.is-cut:hover .sx-rel,
+html[data-theme="dark"] .sx-slot.is-palette-open .sx-rel { color: #1a100b; }
+
+.sx-empty-line {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--ink-faint);
+  padding: 8px 0;
+}
+
+/* ---------- 3. 分层模式块 ---------- */
+.sx-block {
+  display: flex;
+  align-items: flex-start;
+  flex: 0 0 auto;
+  position: relative;
+}
+.sx-block--leaf {
+  border-radius: 8px;
+  outline: 1px dashed var(--line-strong);
+  outline-offset: 2px;
+  transition: background var(--t-fast) var(--ease), outline-color var(--t-fast) var(--ease);
+}
+.sx-block--leaf.is-cuttable:hover { background: var(--gold-soft); outline-color: var(--gold); }
+.sx-block--leaf.is-selected {
+  background: var(--accent-soft);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.sx-block--split { background: transparent; }
+
+/* ---------- 4. 实时预览 ---------- */
+.sx-preview {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 14px 12px;
+}
+.sx-preview-hd { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+.sx-preview-title {
+  font-family: var(--font-serif);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  letter-spacing: 0.06em;
+}
+.sx-preview-title::before {
+  content: "▍";
+  color: var(--gold);
+  margin-right: 2px;
+}
+.sx-preview-note { font-size: 10.5px; color: var(--ink-faint); }
+.sx-preview-body {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.85;
+  color: var(--ink);
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+.sx-preview-body.is-empty { color: var(--ink-faint); font-style: normal; }
+.sx-preview-body.is-empty::before { content: "○ "; color: var(--ink-faint); }
+
+/* ---------- 5. 工具条 ---------- */
+.sx-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.sx-modes .seg-btn { min-height: 32px; padding: 4px 12px; }
+.sx-count {
+  font-family: var(--font-num);
+  font-size: 12px;
+  color: var(--ink-soft);
+  background: var(--surface-3);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 11px;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+.sx-kbdhint {
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  letter-spacing: 0.02em;
+}
+.sx-kbdhint-txt { opacity: 0.9; }
+
+/* ---------- 6. 关系选择浮层（palette 组件扩展） ---------- */
+.sx-palette {
+  width: min(452px, calc(100vw - 24px));
+  max-height: min(68vh, 520px);
+}
+.sx-palette .palette-hd { padding: 10px 12px 8px; gap: 7px; flex-wrap: wrap; }
+.sx-palette .palette-title { font-size: 12.5px; min-width: 0; }
+.sx-palette-del { flex: 0 0 auto; }
+.sx-palette-cancel { flex: 0 0 auto; }
+.sx-palette .palette-bd { padding: 10px 12px 8px; }
+.sx-palette-group { margin-bottom: 12px; }
+.sx-rel-keys { display: flex; flex-wrap: wrap; gap: 7px; }
+.sx-rel-key {
+  min-width: 64px;
+  height: 40px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease),
+    border-color var(--t-fast) var(--ease), transform var(--t-fast) var(--ease);
+}
+.sx-rel-key:hover,
+.sx-rel-key:focus-visible {
+  background: var(--accent);
+  color: #fff8ef;
+  border-color: transparent;
+  transform: translateY(-1px);
+}
+html[data-theme="dark"] .sx-rel-key:hover { color: #16100c; }
+.sx-rel-key.is-current {
+  background: var(--gold);
+  color: #241c0d;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--gold-soft);
+}
+.sx-rel-num {
+  font-family: var(--font-num);
+  font-size: 10px;
+  line-height: 1;
+  opacity: 0.62;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  padding: 1px 3px;
+}
+.sx-palette-ft {
+  border-top: 1px solid var(--line);
+  padding: 7px 12px 8px;
+  background: var(--surface-2);
+}
+.sx-palette-tip { font-size: 10.5px; color: var(--ink-faint); letter-spacing: 0.02em; }
+
+/* ---------- 7. 只读展示（标准答案 / 刀位 diff） ---------- */
+.sx-compare,
+.sx-result-detail,
+.sx-solution {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sx-block-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  margin: 12px 0 5px;
+}
+.sx-block-label::before {
+  content: "";
+  width: 12px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: 0.8;
+}
+.sx-detail-hd { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sx-detail-hd .sx-block-label { margin: 6px 0 4px; }
+.sx-tree-text {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.9;
+  color: var(--ink-soft);
+  background: var(--surface-2);
+  border: 1px dashed var(--line-strong);
+  border-radius: 10px;
+  padding: 10px 12px;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+.sx-sol-tip { font-size: 12px; color: var(--ink-faint); margin-top: 8px; }
+.sx-sol-err { font-size: 12.5px; color: var(--bad); margin-top: 6px; }
+.sx-legend {
+  font-size: 10.5px;
+  line-height: 1.7;
+  color: var(--ink-faint);
+  margin: 6px 0 2px;
+}
+
+/* 只读句子行 */
+.sx-ro-line {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  width: 100%;
+  padding: 8px 12px 108px;
+  font-family: var(--font-serif);
+  font-size: clamp(19px, 2.2vw, 24px);
+  line-height: 1.3;
+  letter-spacing: 0;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.sx-ro-char {
+  flex: 0 0 auto;
+  width: 1.1em;
+  text-align: center;
+  line-height: 1.3;
+}
+.sx-slot--ro { cursor: default; }
+.sx-slot--ro::before,
+.sx-slot--ro::after { display: none; }
+/* 只读对照：横排小标签，按奇偶错行（top 由 JS 按 gap 计算） */
+.sx-slot--ro .sx-rel {
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  font-size: 9.5px;
+  line-height: 1.25;
+  letter-spacing: 0;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 1px 5px;
+  border-radius: 5px;
+  pointer-events: none;
+}
+.sx-slot--ro .sx-rel--got {
+  color: var(--bad);
+  border-color: color-mix(in srgb, var(--bad) 44%, var(--line));
+  background: color-mix(in srgb, var(--bad) 8%, var(--surface));
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+/* 标准刀位（金色） */
+.sx-ro--std .sx-cutline { border-left-color: var(--gold); }
+.sx-ro--std .sx-cutline::before { background: var(--gold); }
+.sx-ro--std .sx-rel {
+  color: var(--gold);
+  border-color: color-mix(in srgb, var(--gold) 42%, var(--line));
+  background: color-mix(in srgb, var(--gold) 5%, var(--surface));
+}
+
+/* 正确（青玉） */
+.sx-ro--ok .sx-cutline { border-left-color: var(--jade); }
+.sx-ro--ok .sx-cutline::before { background: var(--jade); }
+.sx-ro--ok .sx-rel {
+  color: var(--jade);
+  border-color: color-mix(in srgb, var(--jade) 40%, var(--line));
+  background: var(--jade-soft);
+}
+
+/* 漏切（虚线圈 + 虚线刀位，朱砂） */
+.sx-ro--miss .sx-cutline { border-left-style: dashed; border-left-color: var(--bad); }
+.sx-ro--miss .sx-cutline::before { background: transparent; border: 2px dashed var(--bad); width: 9px; height: 9px; top: -4px; left: -5px; }
+.sx-ro--miss .sx-rel {
+  color: var(--bad);
+  border-color: color-mix(in srgb, var(--bad) 42%, var(--line));
+  background: color-mix(in srgb, var(--bad) 6%, var(--surface));
+}
+.sx-miss-ring {
+  position: absolute;
+  left: 50%;
+  top: 0.1em;
+  transform: translateX(-50%);
+  width: 1.15em;
+  height: 1.15em;
+  border: 2px dashed var(--bad);
+  border-radius: 50%;
+  opacity: 0.85;
+}
+
+/* 多切 / 词内误切（红） */
+.sx-ro--extra .sx-cutline { border-left-color: var(--bad); }
+.sx-ro--extra .sx-cutline::before { background: var(--bad); }
+.sx-ro--extra .sx-rel {
+  color: var(--bad);
+  border-color: color-mix(in srgb, var(--bad) 42%, var(--line));
+  background: color-mix(in srgb, var(--bad) 7%, var(--surface));
+}
+
+/* 关系错 / 层次错（金 + 你的答案红） */
+.sx-ro--rel .sx-cutline { border-left-color: var(--accent); }
+.sx-ro--level .sx-cutline { border-left-color: var(--gold); }
+.sx-ro--level .sx-cutline::before { background: var(--gold); }
+.sx-ro--rel .sx-rel--rel,
+.sx-ro--level .sx-rel--rel { color: var(--gold); border-color: color-mix(in srgb, var(--gold) 45%, var(--line)); }
+
+/* 刀位对照清单 */
+.sx-cmp-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.sx-cmp-row {
+  display: grid;
+  grid-template-columns: 84px 74px minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+  padding: 7px 11px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.sx-cmp-row--miss,
+.sx-cmp-row--over,
+.sx-cmp-row--inword,
+.sx-cmp-row--rel {
+  background: color-mix(in srgb, var(--bad) 5%, var(--surface));
+  border-color: color-mix(in srgb, var(--bad) 20%, var(--line));
+}
+.sx-cmp-row--level {
+  background: color-mix(in srgb, var(--gold) 6%, var(--surface));
+  border-color: color-mix(in srgb, var(--gold) 26%, var(--line));
+}
+.sx-cmp-gap { font-family: var(--font-num); color: var(--ink-soft); white-space: nowrap; }
+.sx-cmp-status { font-weight: 600; color: var(--bad); white-space: nowrap; }
+.sx-cmp-row--level .sx-cmp-status { color: var(--gold); }
+.sx-cmp-detail { color: var(--ink-soft); min-width: 0; word-break: break-word; }
+.sx-cmp-ok { font-size: 12.5px; color: var(--jade); padding: 7px 2px; }
+
+/* ---------- 8. 窄屏 ---------- */
+@media (max-width: 620px) {
+  .sx-line {
+    font-size: 22px;
+    padding: 10px 12px 20px;
+  }
+  .sx-char { width: 1.06em; }
+  .sx-slot { min-width: 10px; }
+  .sx-slot::before { width: 32px; }
+  .sx-rel { font-size: 10px; padding: 2px 1px; }
+  .sx-ro-line { padding: 8px 10px 88px; font-size: 20px; }
+  .sx-hint { font-size: 12px; }
+  .sx-rel-key { min-width: 72px; height: 44px; font-size: 14px; }
+  .sx-palette .palette-bd { padding-bottom: 14px; }
+  .sx-cmp-row { grid-template-columns: 76px 68px minmax(0, 1fr); font-size: 12px; }
+  .sx-kbdhint { display: none; }
+  .sx-preview-body { font-size: 12.5px; }
+}
+
+/* ---------- 9. 动效尊重系统设置 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .sx-slot, .sx-rel, .sx-block--leaf, .sx-rel-key { transition: none; }
+}
+
+/* ==========================================================================
+   10. 层次分析图（逐层分析模式主视觉）
+   - 每层一行：横括号（两端竖线）+ 括号上关系名 + 括号下成分角色
+   - 左侧「第 N 层」徽标列；不同层不同颜色；当前待切层高亮
+   - 未切成分：虚线占位；答案 diff：多切红虚线、漏切虚影、关系错红色标注
+   ========================================================================== */
+.sx-preview.is-hidden,
+.sx-diagram-panel.is-hidden { display: none !important; }
+
+.sx-diagram-panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  padding: 12px 14px 14px;
+  min-width: 0;
+}
+.sx-diagram-hd { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.sx-diagram-title {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+}
+.sx-diagram-title::before { content: "▍"; color: var(--gold); margin-right: 2px; }
+.sx-diagram-note { font-size: 10.5px; color: var(--ink-faint); }
+
+.sx-diagram {
+  --dg-leaf-h: 2.4em;
+  --dg-level-h: 3.9em;
+  --dg-slot-h: 2.6em;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  font-size: 14px;
+  line-height: 1.3;
+  background: var(--surface-2);
+  border: 1px dashed var(--line-strong);
+  border-radius: 10px;
+  padding: 8px 10px 10px 8px;
+  min-width: 0;
+}
+
+/* 左侧层徽标列 */
+.sx-dg-tags {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding-top: 2px;
+}
+.sx-dg-tag {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  padding: 0 9px 0 2px;
+  border-right: 1px solid var(--line);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+.sx-dg-tag b { font-size: 10.5px; font-weight: 600; color: var(--ink-soft); }
+.sx-dg-tag small { font-size: 9.5px; color: var(--ink-faint); letter-spacing: 0.02em; }
+.sx-dg-tag--leaf { height: var(--dg-leaf-h); }
+.sx-dg-tag--level { height: var(--dg-level-h); }
+.sx-dg-tag--slots { height: var(--dg-slot-h); }
+.sx-dg-tag.is-current { background: var(--accent-soft); border-radius: 6px 0 0 6px; }
+.sx-dg-tag.is-current b { color: var(--accent); }
+
+/* 右侧可横向滚动的图区 */
+.sx-dg-scroll {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+.sx-dg-scroll::-webkit-scrollbar { height: 7px; }
+.sx-dg-scroll::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 6px; }
+.sx-dg-body { position: relative; min-width: 100%; padding-top: 2px; }
+
+.sx-dg-row { position: relative; width: 100%; }
+.sx-dg-row--leaf { height: var(--dg-leaf-h); }
+.sx-dg-row--level { height: var(--dg-level-h); }
+.sx-dg-row--slots { height: var(--dg-slot-h); margin-top: 2px; }
+.sx-dg-row.is-current { background: color-mix(in srgb, var(--accent) 5%, transparent); border-radius: 6px; }
+.sx-dg-row.is-ghost { background: color-mix(in srgb, var(--gold) 6%, transparent); }
+.sx-dg-plot { position: absolute; inset: 0; }
+
+/* 原文 / 叶子行 */
+.sx-dg-leaf {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 1em;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* 括号行 */
+.sx-dg-node {
+  position: absolute;
+  top: 0.95em;
+  height: 1.05em;
+  border-top: 1.6px solid var(--dg, var(--accent));
+  border-left: 1.6px solid var(--dg, var(--accent));
+  border-right: 1.6px solid var(--dg, var(--accent));
+  border-radius: 3px 3px 0 0;
+  box-sizing: border-box;
+}
+.sx-dg-node.is-wrong {
+  border-color: var(--bad);
+  background: color-mix(in srgb, var(--bad) 7%, transparent);
+}
+.sx-dg-node.is-extra {
+  border-color: var(--bad);
+  border-style: dashed;
+  background: color-mix(in srgb, var(--bad) 5%, transparent);
+}
+.sx-dg-node.is-ghost {
+  border-style: dashed;
+  border-color: var(--accent-2);
+  opacity: 0.9;
+}
+/* 作答视图：括号可点击改关系 */
+.sx-dg-node.is-clickable { cursor: pointer; }
+.sx-dg-node.is-clickable:hover {
+  background: color-mix(in srgb, var(--dg, var(--accent)) 10%, transparent);
+}
+.sx-dg-node.is-clickable:hover .sx-dg-rel {
+  background: var(--dg, var(--accent));
+  color: #fff8ef;
+}
+html[data-theme="dark"] .sx-dg-node.is-clickable:hover .sx-dg-rel { color: #16100c; }
+/* 多项结构（联合/连谓等）子成分分界小竖线 */
+.sx-dg-tick {
+  position: absolute;
+  top: 0.18em;
+  height: 0.55em;
+  border-left: 1px dashed var(--dg, var(--line-strong));
+  transform: translateX(-50%);
+}
+
+/* 括号上的关系名（作答/解析通用；字号收紧，避免多结构同行时互相压字） */
+.sx-dg-rel {
+  position: absolute;
+  left: 50%;
+  top: -0.82em;
+  transform: translateX(-50%);
+  background: var(--surface-2);
+  padding: 0 2px;
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  color: var(--dg, var(--accent));
+  white-space: nowrap;
+  z-index: 3;
+}
+.sx-dg-rel.is-wrong {
+  color: var(--bad);
+  background: color-mix(in srgb, var(--bad) 9%, var(--surface-2));
+  border: 1px solid color-mix(in srgb, var(--bad) 38%, transparent);
+  border-radius: 5px;
+  padding: 1px 5px;
+  font-size: 9.5px;
+  z-index: 6;
+}
+.sx-dg-rel.is-extra { color: var(--bad); text-decoration: line-through; }
+
+/* 括号下的成分角色 */
+.sx-dg-role {
+  position: absolute;
+  top: 2.22em;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  line-height: 1.2;
+  color: var(--dg, var(--ink-soft));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+.sx-dg-role.is-bad { color: var(--bad); font-weight: 700; }
+
+/* 未切成分：虚线占位 */
+.sx-dg-slot {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--line-strong);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-family: var(--font-serif);
+  font-size: 0.9em;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 0 2px;
+  cursor: pointer;
+  transition: border-color var(--t-fast) var(--ease), background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+.sx-dg-slot:hover { border-color: var(--gold); background: var(--gold-soft); color: var(--ink); }
+.sx-dg-slot.is-current { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.sx-dg-slot.is-miss {
+  border-color: var(--bad);
+  border-style: dashed;
+  color: var(--bad);
+  background: color-mix(in srgb, var(--bad) 5%, transparent);
+}
+
+/* 漏切虚影（画在叶子内部） */
+.sx-dg-ghost {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-left: 1.5px dashed var(--bad);
+  transform: translateX(-50%);
+  z-index: 2;
+}
+.sx-dg-ghost-tag {
+  position: absolute;
+  top: -0.15em;
+  left: -0.65em;
+  font-size: 9px;
+  font-style: normal;
+  line-height: 1.2;
+  color: var(--bad);
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--bad) 40%, transparent);
+  border-radius: 3px;
+  padding: 0 2px;
+  white-space: nowrap;
+}
+
+.sx-dg-empty {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--ink-faint);
+  text-align: center;
+  padding: 14px 6px;
+}
+
+/* 每层配色（朱砂 → 青玉 → 鎏金 循环） */
+.sx-dg-d0 { --dg: var(--accent); }
+.sx-dg-d1 { --dg: var(--jade); }
+.sx-dg-d2 { --dg: var(--gold); }
+.sx-dg-d3 { --dg: var(--accent-2); }
+.sx-dg-d4 { --dg: var(--jade-2); }
+.sx-dg-d5 { --dg: var(--gold-2); }
+
+/* 窄屏：图整体可横向滚动，不挤压字号 */
+@media (max-width: 620px) {
+  .sx-diagram-panel { padding: 10px 10px 12px; }
+  .sx-diagram { font-size: 12.5px; padding: 6px 6px 8px 4px; }
+  .sx-dg-tag { padding-right: 6px; }
+  .sx-dg-tag b { font-size: 9.5px; }
+  .sx-dg-tag small { font-size: 8.5px; }
+  .sx-dg-rel { font-size: 9.5px; }
+  .sx-dg-rel.is-wrong { font-size: 8.5px; }
+  .sx-dg-role { font-size: 9px; }
+  .sx-diagram-hd { margin-bottom: 6px; }
+  .sx-diagram-title { font-size: 12px; }
+}
+
+/* ==========================================================================
+   11. 多解（歧义）作答：分析标签页 + 解析页读法对照
+   ========================================================================== */
+.sx-analyses {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0 2px;
+  min-width: 0;
+}
+.sx-analysis-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+.sx-analysis-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 3px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-size: 12.5px;
+  line-height: 1.4;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+.sx-analysis-tab:hover { border-color: var(--gold); color: var(--ink); }
+.sx-analysis-tab.is-active {
+  background: var(--accent);
+  border-color: transparent;
+  color: #fff8ef;
+  box-shadow: 0 6px 16px -12px var(--accent);
+}
+html[data-theme="dark"] .sx-analysis-tab.is-active { color: #16100c; }
+.sx-analysis-tab-count {
+  font-family: var(--font-num);
+  font-size: 10px;
+  opacity: 0.75;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  border-radius: 999px;
+  padding: 0 6px;
+  line-height: 1.6;
+}
+.sx-analysis-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+.sx-add-analysis { border-style: dashed; }
+.sx-rename-wrap { display: flex; flex-direction: column; gap: 8px; padding: 4px 2px; }
+.sx-rename-input { font-size: 14px; }
+
+/* 解析页：多读法块 */
+.sx-reading {
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 8px 10px 6px;
+  margin: 6px 0 10px;
+  background: color-mix(in srgb, var(--surface-2) 55%, transparent);
+}
+.sx-reading-hd { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+.sx-reading-meaning { font-size: 11.5px; color: var(--ink-soft); line-height: 1.5; }
+.sx-match-hd {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin: 10px 0 4px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+  font-size: 12px;
+}
+.sx-match-label { font-weight: 600; color: var(--ink-soft); }
+.sx-match-arrow { color: var(--ink-faint); }
+.sx-match-miss { color: var(--bad); font-size: 11.5px; }
+.sx-match-extra { font-size: 11.5px; color: var(--ink-faint); margin: 6px 0; line-height: 1.6; }
+.sx-cmp-subhd { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 12px 0 5px; }
+
+@media (max-width: 620px) {
+  .sx-analyses { gap: 6px; }
+  .sx-analysis-tab { min-height: 32px; padding: 3px 9px; font-size: 12px; }
+  .sx-analysis-actions { margin-left: 0; width: 100%; }
+  .sx-analysis-actions .btn { min-height: 32px; }
+  .sx-reading { padding: 6px 6px 4px; }
+}
+
+/* ---------- 手机端（≤620px）句子换行 + 紧凑 ---------- */
+@media (max-width: 620px) {
+  .sx-scroll { -webkit-overflow-scrolling: touch; }
+  .sx-line {
+    flex-wrap: wrap;
+    width: auto;
+    min-width: 0;
+    font-size: 19px;
+    padding: 8px 8px 16px;
+    row-gap: 2px;
+    align-items: center;
+  }
+  .sx-char { width: 1.03em; }
+  .sx-slot { min-width: 8px; height: 34px; }
+  .sx-slot::before { width: 30px; }
+  .sx-block--leaf { display: inline-flex; flex-wrap: wrap; }
+  .sx-palette { max-height: 68vh; }
+  .sx-toolbar { flex-wrap: wrap; row-gap: 6px; }
+  .sx-preview-body { max-height: 120px; }
+}
+
+/* 手机端修正：句子/分层块强制换行，避免横向裁切 */
+@media (max-width: 620px) {
+  .sx-line { width: 100% !important; max-width: 100%; min-width: 0 !important; flex-wrap: wrap !important; overflow: visible; box-sizing: border-box; }
+  .sx-line .sx-block, .sx-line .sx-block--leaf, .sx-line .sx-block--split { max-width: 100%; min-width: 0; flex-wrap: wrap; }
+  .sx-scroll { overflow-x: auto; }
+}
+
+@media (max-width: 620px) {
+  .sx-scroll { scrollbar-width: none; }
+  .sx-scroll::-webkit-scrollbar { display: none; }
+  .sx-line { padding-bottom: 10px; }
+}
