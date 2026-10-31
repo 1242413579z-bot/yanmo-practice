@@ -1,0 +1,139 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>研墨 · 语言学操作题训练场</title>
+<meta name="description" content="语言学考研五大操作题刷题工具：句法分析（层次分析法）、义素分析、国际音标、古文翻译、句读。逐刀判分、错因归类、内置题库，完全离线可用。">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#F4EEE3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B0E11" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="研墨">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="icon-192.png"><link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/pages.css">
+<link rel="stylesheet" href="css/module-syntax.css">
+<link rel="stylesheet" href="css/module-ipa.css">
+<link rel="stylesheet" href="css/module-sememe.css">
+<link rel="stylesheet" href="css/module-translate.css">
+<link rel="stylesheet" href="css/module-punct.css">
+<script>
+/* 首屏前恢复主题，避免闪白 */
+(function () {
+  try {
+    var raw = localStorage.getItem('yanmo.practice.v1');
+    var theme = raw ? (JSON.parse(raw).settings || {}).theme : 'auto';
+    if (!theme || theme === 'auto') {
+      theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', theme);
+  } catch (e) {}
+})();
+</script>
+</head>
+<body>
+<div class="app">
+  <!-- ======== 侧边栏 ======== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">研墨</div>
+      <div class="brand-sub">语言学操作题</div>
+    </div>
+    <nav class="nav" id="nav">
+      <a class="nav-item" data-route="home" href="#/home"><span class="nav-ico-slot"></span><span class="nav-label">首页</span></a>
+      <div class="nav-group">五 大 题 型</div>
+      <a class="nav-item" data-route="syntax" href="#/syntax"><span class="nav-ico-slot"></span><span class="nav-label">句法分析</span><span class="nav-count" data-count="syntax">0</span></a>
+      <a class="nav-item" data-route="ipa" href="#/ipa"><span class="nav-ico-slot"></span><span class="nav-label">国际音标</span><span class="nav-count" data-count="ipa">0</span></a>
+      <a class="nav-item" data-route="sememe" href="#/sememe"><span class="nav-ico-slot"></span><span class="nav-label">义素分析</span><span class="nav-count" data-count="sememe">0</span></a>
+      <a class="nav-item" data-route="translate" href="#/translate"><span class="nav-ico-slot"></span><span class="nav-label">古文翻译</span><span class="nav-count" data-count="translate">0</span></a>
+      <a class="nav-item" data-route="punct" href="#/punct"><span class="nav-ico-slot"></span><span class="nav-label">句读标点</span><span class="nav-count" data-count="punct">0</span></a>
+      <div class="nav-group">复 盘</div>
+      <a class="nav-item" data-route="review" href="#/review"><span class="nav-ico-slot"></span><span class="nav-label">错题重练</span><span class="nav-count" data-count="wrong">0</span></a>
+      <a class="nav-item" data-route="stats" href="#/stats"><span class="nav-ico-slot"></span><span class="nav-label">统计复盘</span></a>
+      <div class="nav-group">其 他</div>
+      <a class="nav-item" data-route="assistant" href="#/assistant"><span class="nav-ico-slot"></span><span class="nav-label">AI 助教</span></a>
+      <a class="nav-item" data-route="settings" href="#/settings"><span class="nav-ico-slot"></span><span class="nav-label">设置与说明</span></a>
+    </nav>
+    <div class="sidebar-foot" id="sidebar-foot">
+      <div>今日 <b id="foot-today">0</b> 题 · 正确率 <b id="foot-rate">—</b></div>
+      <div>连续练习 <b id="foot-streak">0</b> 天</div>
+    </div>
+  </aside>
+
+  <!-- ======== 主区 ======== -->
+  <div class="main">
+    <header class="topbar">
+      <button class="btn btn--icon btn--ghost menu-btn" id="menu-btn" title="菜单">☰</button>
+      <div class="crumb" id="crumb"></div>
+      <div class="top-actions">
+        <span class="badge badge--gold" id="ai-pill" title="AI 精析状态">AI</span>
+        <button class="btn btn--icon btn--ghost btn--sm" id="theme-btn" title="切换主题">◐</button>
+      </div>
+    </header>
+    <div class="content" id="page-root"></div>
+  </div>
+</div>
+
+<!-- ======== 底部 TabBar（窄屏） ======== -->
+<nav class="tabbar">
+  <div class="tabbar-inner" id="tabbar">
+    <a class="tab" data-route="home" href="#/home"><span class="nav-ico-slot"></span><span>首页</span></a>
+    <a class="tab" data-route="syntax" href="#/syntax"><span class="nav-ico-slot"></span><span>句法</span></a>
+    <a class="tab" data-route="ipa" href="#/ipa"><span class="nav-ico-slot"></span><span>音标</span></a>
+    <a class="tab" data-route="sememe" href="#/sememe"><span class="nav-ico-slot"></span><span>义素</span></a>
+    <a class="tab" data-route="translate" href="#/translate"><span class="nav-ico-slot"></span><span>翻译</span></a>
+    <a class="tab" data-route="punct" href="#/punct"><span class="nav-ico-slot"></span><span>句读</span></a>
+    <a class="tab" data-route="review" href="#/review"><span class="nav-ico-slot"></span><span>错题</span></a>
+    <a class="tab" data-route="stats" href="#/stats"><span class="nav-ico-slot"></span><span>统计</span></a>
+  </div>
+</nav>
+
+<div id="modal-root"></div>
+
+<!-- ======== 数据与核心库（顺序不可乱，见 docs/CONTRACT.md §3） ======== -->
+<script src="js/data/taxonomy.js"></script>
+<script src="js/data/skills.js"></script>
+<script src="js/data/syntax-a.js"></script>
+<script src="js/data/syntax-b.js"></script>
+<script src="js/data/sememe.js"></script>
+<script src="js/data/ipa.js"></script>
+<script src="js/data/translate.js"></script>
+<script src="js/data/punct.js"></script>
+
+<script src="js/core/util.js"></script>
+<script src="js/core/grade-common.js"></script>
+<script src="js/core/store.js"></script>
+<script src="js/core/ui.js"></script>
+<script src="js/core/ai.js"></script>
+
+<script src="js/grade/syntax.js"></script>
+<script src="js/grade/ipa.js"></script>
+<script src="js/grade/sememe.js"></script>
+<script src="js/grade/punct.js"></script>
+<script src="js/grade/translate.js"></script>
+
+<script src="js/modules/syntax.js"></script>
+<script src="js/modules/ipa.js"></script>
+<script src="js/modules/sememe.js"></script>
+<script src="js/modules/punct.js"></script>
+<script src="js/modules/translate.js"></script>
+
+<script src="js/pages/dashboard.js"></script>
+<script src="js/pages/review.js"></script>
+<script src="js/pages/stats.js"></script>
+<script src="js/pages/assistant.js"></script>
+<script src="js/pages/settings.js"></script>
+
+<script src="js/app.js"></script>
+<script>
+/* PWA：仅在 http(s) 部署时注册 Service Worker（file:// 下跳过，不影响离线使用） */
+if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
+  window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+}
+</script>
+</body>
+</html>
+
