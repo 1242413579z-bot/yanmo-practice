@@ -1,0 +1,16 @@
+﻿{
+  "name": "研墨 · 语言学操作题训练场",
+  "short_name": "研墨",
+  "description": "语言学考研五大操作题刷题：句法分析、义素分析、国际音标、古文翻译、句读。逐刀判分、离线可用。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F4EEE3",
+  "theme_color": "#F4EEE3",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
