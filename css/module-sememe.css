@@ -1,0 +1,87 @@
+/* ============================================================
+   practice/css/module-sememe.css — 义素分析模块
+   ============================================================ */
+.sm-wrap { display: flex; flex-direction: column; gap: 12px; }
+.sm-tip { font-size: 12.5px; display: block; }
+.sm-scroller { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.sm-table { width: auto; min-width: 100%; border-collapse: separate; border-spacing: 0; }
+.sm-table th, .sm-table td { padding: 6px 8px; text-align: center; vertical-align: middle; }
+.sm-table thead th { background: var(--surface-2); position: sticky; top: 0; z-index: 2; }
+.sm-corner, .sm-word { text-align: left !important; font-family: var(--font-serif); font-size: 16px; color: var(--ink); white-space: nowrap; padding-right: 14px !important; position: sticky; left: 0; background: var(--surface); z-index: 1; }
+.sm-th { min-width: 92px; }
+.sm-th-inner { display: flex; align-items: center; gap: 4px; justify-content: center; }
+.sm-th-add { min-width: 84px; }
+.sm-head-input {
+  width: 100%; min-width: 76px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 7px;
+  padding: 4px 6px;
+  font-size: 13px;
+  text-align: center;
+  color: var(--ink);
+}
+.sm-head-input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-soft); }
+.sm-del {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px; margin-left: 3px;
+  border-radius: 50%;
+  color: var(--ink-faint);
+  font-size: 13px;
+  line-height: 1;
+  vertical-align: middle;
+}
+.sm-del:hover { background: color-mix(in srgb, var(--bad) 12%, transparent); color: var(--bad); }
+
+.sm-cell {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 46px; height: 40px;
+  border-radius: 9px;
+  border: 1px dashed var(--line-strong);
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 18px;
+  color: var(--ink-faint);
+  transition: all var(--t-fast) var(--ease);
+}
+.sm-cell:hover { border-color: var(--gold); transform: translateY(-1px); }
+.sm-cell.has-val { border-style: solid; font-weight: 700; }
+.sm-cell.val-plus { color: var(--jade); border-color: color-mix(in srgb, var(--jade) 50%, transparent); background: var(--jade-soft); }
+.sm-cell.val-minus { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 40%, transparent); background: color-mix(in srgb, var(--bad) 8%, var(--surface)); }
+.sm-cell.val-pm { color: var(--gold); border-color: color-mix(in srgb, var(--gold) 45%, transparent); background: var(--gold-soft); }
+
+.sm-quick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.sm-bar { margin-top: 2px; }
+
+.sm-sym { font-family: var(--font-mono); font-size: 15px; font-weight: 600; }
+.sm-sym.plus { color: var(--jade); }
+.sm-sym.minus { color: var(--bad); }
+.sm-sym.pm { color: var(--gold); }
+.sm-sym.ok { color: var(--jade); }
+.sm-sym.bad { color: var(--bad); font-size: 12px; font-weight: 500; }
+.sm-sol-table th { font-size: 12.5px; }
+.sm-compare { display: flex; flex-direction: column; gap: 6px; }
+.sm-compare-row {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 7px 10px;
+  border-radius: 9px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  font-size: 13px;
+}
+.sm-compare-k { min-width: 110px; font-weight: 600; }
+.sm-compare-v { flex: 1; color: var(--ink-soft); }
+.sm-diff-table { font-size: 12.5px; }
+.sm-diff-table td { font-family: var(--font-mono); white-space: nowrap; }
+
+/* ---------- 手机端（≤620px）矩阵紧凑 ---------- */
+@media (max-width: 620px) {
+  .sm-table th, .sm-table td { padding: 4px 5px; }
+  .sm-th { min-width: 68px; }
+  .sm-head-input { min-width: 56px; font-size: 12px; padding: 4px 4px; }
+  .sm-del { width: 16px; height: 16px; }
+  .sm-word { font-size: 15px; padding-right: 8px !important; }
+  .sm-cell { min-width: 36px; height: 34px; font-size: 15px; }
+  .sm-tip { font-size: 12px; line-height: 1.65; }
+  .sm-bar .btn { min-height: 36px; }
+}
