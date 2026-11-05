@@ -21,7 +21,7 @@
   var IPA = (window.GC && window.GC.IPA) || null;
 
   /* ---------------- 面板符号表（符号按钮即数据源） ---------------- */
-  // 元音：国际音标常用元音表（A = 开央不圆唇元音；ɚ/ɿ/ʅ/ʮ 为汉语特殊元音；ɥ 按用户要求列在元音栏）
+  // 元音：国际音标常用元音表（A = 开央不圆唇元音；ɚ/ɿ/ʅ/ʮ 为汉语特殊元音；ɥ 列在元音栏）
   var VOWELS = [
     'a', 'ɑ', 'ɒ', 'ɐ', 'æ', 'ɛ', 'e', 'ø', 'œ', 'ɶ', 'ɜ', 'ɞ', 'ə', 'ɘ', 'ɵ',
     'ɤ', 'o', 'ɔ', 'ʌ', 'ɪ', 'ʏ', 'ʊ', 'ɨ', 'ʉ', 'ɯ', 'u', 'i', 'y',
@@ -157,7 +157,23 @@
     }
     return false;
   }
-  function isStateInput(node) { return !!(state && node && state.inputs.indexOf(node) >= 0); }
+  function isStateInput(node) {
+    if (!state || !node) return false;
+    for (var i = 0; i < state.targets.length; i++) if (state.targets[i].node === node) return true;
+    return false;
+  }
+  function targetKind(node) {
+    if (!state || !node) return null;
+    for (var i = 0; i < state.targets.length; i++) if (state.targets[i].node === node) return state.targets[i].kind;
+    return null;
+  }
+  function subIdxOf(node) {
+    if (!state || !node) return -1;
+    for (var i = 0; i < state.targets.length; i++) {
+      if (state.targets[i].node === node && state.targets[i].kind === 'sub') return state.targets[i].idx;
+    }
+    return -1;
+  }
 
   function setCollapsed(collapsed, opts) {
     if (!state || !state.palette) return;
@@ -205,9 +221,9 @@
   function inputTarget() {
     if (!state) return null;
     var ae = document.activeElement;
-    if (ae && state.inputs.indexOf(ae) >= 0) { state.lastInput = ae; return ae; }
-    if (state.lastInput && state.inputs.indexOf(state.lastInput) >= 0) return state.lastInput;
-    return state.inputs[0] || null;
+    if (ae && isStateInput(ae)) { state.lastInput = ae; return ae; }
+    if (state.lastInput && isStateInput(state.lastInput)) return state.lastInput;
+    return state.inputs[0] || state.subInputs[0] || null;
   }
   function idxOf(inp) {
     if (!inp) return -1;
@@ -262,7 +278,7 @@
   function insertText(str) {
     var inp = inputTarget();
     if (!inp) {
-      if (window.UI && typeof window.UI.toast === 'function') window.UI.toast('先点一个音标输入框，再点符号', 'info');
+      if (window.UI && typeof window.UI.toast === 'function') window.UI.toast('先点一个输入框', 'info');
       return;
     }
     var val = inp.value || '';
@@ -286,13 +302,23 @@
     var val = inp.value || '';
     var pos = caretOf(inp);
     var before = val.slice(0, pos.start);
-    // 光标前若已有调值（数字 / 调号 / 旧的 0）→ 替换，避免出现 5135 / 55214 这种废串
+    var after = val.slice(pos.end);
+    // 光标前若已有调值 → 替换，避免出现 5135 / 55214 这类无效串
     var m = before.match(/(?:214|55|35|51|21|0|[˥˦˧˨˩]{1,5})$/);
     if (m) {
-      var next = before.slice(0, before.length - m[0].length) + digits + val.slice(pos.end);
+      var next = before.slice(0, before.length - m[0].length) + digits + after;
       applyEdit(inp, next, before.length - m[0].length + digits.length);
       return;
     }
+    // 光标后紧跟旧调值（把光标移到音节中间再点声调）→ 替换后面那一段
+    var m2 = after.match(/^(?:214|55|35|51|21|0|[˥˦˧˨˩]{1,5})/);
+    if (m2) {
+      var next2 = before + digits + after.slice(m2[0].length);
+      applyEdit(inp, next2, pos.start + digits.length);
+      return;
+    }
+    // 空输入框或光标在行首时，声调不能写成音节的第一个字符
+    if (!before.replace(/[\s\[\/]/g, '')) return;
     insertText(digits);
   }
   function deleteBack() {
@@ -336,14 +362,13 @@
   }
   function updateTargetLabel() {
     if (!state || !state.paletteTarget) return;
-    var focused = document.activeElement;
-    var focusedIsInput = !!(focused && state.inputs.indexOf(focused) >= 0);
-    if (!focusedIsInput && !state.lastInput) {
-      setText(state.paletteTarget, '点输入框后，点符号插入光标处（默认第 1 项）');
+    var inp = inputTarget();
+    if (!inp) { setText(state.paletteTarget, '点符号插入到光标处'); return; }
+    if (targetKind(inp) === 'sub') {
+      var si = subIdxOf(inp);
+      setText(state.paletteTarget, '正在输入：音位小题 ' + (si + 1));
       return;
     }
-    var inp = inputTarget();
-    if (!inp) { setText(state.paletteTarget, '点输入框后，点符号插入光标处'); return; }
     var i = idxOf(inp);
     var item = (state.question.items || [])[i] || {};
     setText(state.paletteTarget, '正在输入：第 ' + (i + 1) + ' 项' + (item.text ? '「' + item.text + '」' : ''));
@@ -353,6 +378,14 @@
     if (state.inputs[i + 1]) { state.inputs[i + 1].focus(); return; }
     if (state.subInputs[0]) { state.subInputs[0].focus(); return; }
     if (state.inputs[i]) state.inputs[i].blur();
+  }
+
+  /* ---------------- 分区标题 ---------------- */
+  function sectionBar(label, extra) {
+    var bar = mk('div', 'ip-sec-hd');
+    bar.appendChild(mkText('span', 'ip-sec-name', label));
+    if (extra) bar.appendChild(mkText('span', 'ip-sec-extra', extra));
+    return bar;
   }
 
   /* ---------------- 面板构建 ---------------- */
@@ -408,7 +441,7 @@
       setCollapsed(!(state && state.collapsed));
     });
 
-    var target = mkText('span', 'ip-target', '点输入框后，点符号插入光标处（默认第 1 项）');
+    var target = mkText('span', 'ip-target', '点符号插入到光标处');
     var collapseBtn = mkText('button', 'btn btn--primary btn--sm ip-palette-collapse', '收起 ▴');
     collapseBtn.type = 'button';
     on(collapseBtn, 'click', function (e) {
@@ -531,6 +564,7 @@
     });
 
     state.inputs.push(input);
+    state.targets.push({ node: input, kind: 'item', idx: i });
     state.itemUi.push({ i: i, card: card, input: input, sylEl: sylEl });
     return card;
   }
@@ -544,19 +578,20 @@
     var lab = mkText('label', 'label ip-sub-q', (i + 1) + '. ' + safeStr(sq && sq.q));
     var ta = mk('textarea', 'textarea ip-sub-input');
     ta.rows = 3;
-    ta.placeholder = '分点写出要点即可（离线按关键词覆盖判分）';
+    ta.placeholder = '分点写出要点';
     ta.setAttribute('spellcheck', 'false');
-    ta.dataset.idx = String(i);
-    var meta = mkText('div', 'ip-sub-meta faint', '0 字 · 建议分点作答');
+    ta.dataset.subIdx = String(i);
+    var meta = mkText('div', 'ip-sub-meta faint', '0 字');
     on(ta, 'focus', function () { if (state) state.lastSub = ta; });
     on(ta, 'input', function () {
-      setText(meta, charCount(ta.value) + ' 字 · 建议分点作答');
+      setText(meta, charCount(ta.value) + ' 字');
       notifyChange();
     });
     block.appendChild(lab);
     block.appendChild(ta);
     block.appendChild(meta);
     state.subInputs.push(ta);
+    state.targets.push({ node: ta, kind: 'sub', idx: i });
     state.subUi.push({ i: i, ta: ta, meta: meta });
     return block;
   }
@@ -591,7 +626,7 @@
       if (j < ua.subs.length) state.subInputs[j].value = ua.subs[j];
     }
     for (var k = 0; k < state.subUi.length; k++) {
-      setText(state.subUi[k].meta, charCount(state.subUi[k].ta.value) + ' 字 · 建议分点作答');
+      setText(state.subUi[k].meta, charCount(state.subUi[k].ta.value) + ' 字');
     }
     state.caret = null;
     refreshAll();
@@ -622,12 +657,30 @@
     return code;
   }
 
+  // 标准音标按「声母 / 韵母 / 调值」拆开显示，便于逐项核对
+  function syllableParts(ipa) {
+    var toks = splitTokens(stripNeutralZero(ipa));
+    var out = [];
+    toks.forEach(function (t) {
+      var p = parseOne(t);
+      if (!p || !p.ok) return;
+      out.push({
+        raw: t,
+        initial: p.initial || '零声母',
+        final: p.final,
+        tone: toneNorm(p.tone) || '轻声'
+      });
+    });
+    return out;
+  }
+
   function renderSolution(root, question, userAnswer) {
     if (!root || !root.appendChild) return;
     var q = question || {};
     var ua = readUserAnswer(q, userAnswer);
     var box = mk('div', 'ip-solution');
     var items = Array.isArray(q.items) ? q.items : [];
+    if (items.length) box.appendChild(sectionBar('标准音标', items.length + ' 项 · 声母 / 韵母 / 调值'));
     items.forEach(function (it, i) {
       var rawAlts = Array.isArray(it.alternatives) ? it.alternatives : [];
       var row = mk('div', 'ip-sol-row');
@@ -635,9 +688,22 @@
       hd.appendChild(mkText('span', 'ip-sol-hanzi', safeStr(it.text)));
       hd.appendChild(mkText('span', 'ip-sol-std mono', stripNeutralZero(it.answer)));
       row.appendChild(hd);
+      var parts = syllableParts(it.answer);
+      if (parts.length) {
+        var pbox = mk('div', 'ip-sol-parts');
+        parts.forEach(function (p) {
+          var chip = mk('span', 'ip-sol-part');
+          chip.appendChild(mkText('span', 'ip-sol-part-raw mono', stripNeutralZero(p.raw)));
+          chip.appendChild(mkText('span', 'ip-sol-part-kv', '声 ' + p.initial));
+          chip.appendChild(mkText('span', 'ip-sol-part-kv', '韵 ' + p.final));
+          chip.appendChild(mkText('span', 'ip-sol-part-kv', '调 ' + p.tone));
+          pbox.appendChild(chip);
+        });
+        row.appendChild(pbox);
+      }
       if (rawAlts.length) {
         row.appendChild(mkText('div', 'ip-sol-alt faint',
-          '其他可接受读音：' + rawAlts.map(stripNeutralZero).join(' / ')));
+          '其他读法：' + rawAlts.map(stripNeutralZero).join(' / ')));
       }
       var mineRaw = safeStr(ua.items[i]);
       if (mineRaw) {
@@ -652,7 +718,7 @@
     });
     var subs = Array.isArray(q.subQuestions) ? q.subQuestions : [];
     if (subs.length) {
-      box.appendChild(mkText('div', 'ip-sol-subtitle', '音位分析 · 参考答案'));
+      box.appendChild(sectionBar('音位分析', subs.length + ' 小题 · 参考答案与采分要点'));
       subs.forEach(function (sq, i) {
         var block = mk('div', 'ip-sol-sub');
         block.appendChild(mkText('div', 'ip-sol-q', (i + 1) + '. ' + safeStr(sq.q)));
@@ -714,7 +780,7 @@
           row.appendChild(syls);
         }
         if (rec.normRate != null && rec.normRate < 1) {
-          row.appendChild(mkText('div', 'ip-detail-note', '标写规范项扣分（' + Math.round((1 - rec.normRate) * 100) / 10 + ' 分）'));
+          row.appendChild(mkText('div', 'ip-detail-note', '标写规范扣分（' + Math.round((1 - rec.normRate) * 100) / 10 + ' 分）'));
         }
         var codes = uniqArr(rec.codes || []);
         if (codes.length) {
@@ -779,7 +845,7 @@
         var q = context.question || {};
         state = {
           root: root, ctx: context, question: q,
-          inputs: [], itemUi: [], subInputs: [], subUi: [],
+          inputs: [], itemUi: [], subInputs: [], subUi: [], targets: [],
           lastInput: null, lastSub: null, caret: null,
           palette: null, paletteBody: null, paletteTarget: null, paletteToggle: null,
           paletteStateText: null, paletteCollapse: null, paletteFt: null,
@@ -792,23 +858,24 @@
 
         if (items.length) wrap.appendChild(buildPalette());
         if (items.length) {
-          wrap.appendChild(mkText('div', 'ip-global-hint',
-            '可键盘直接输入；空格分音节；声调打 55/35/214/51/21，轻声不标调。点「音标面板 · 展开」选符号。'));
-        }
-        if (items.length) {
+          var note = mk('div', 'ip-sec');
+          note.appendChild(sectionBar('注音项', items.length + ' 项 · 每项一个输入框'));
+          note.appendChild(mkText('div', 'ip-global-hint',
+            '键盘直接输入 · 空格分音节 · 调值 55/35/214/51/21 · 轻声不标调'));
           var wide = q.kind === 'sentence' || q.kind === 'poem';
           var itemsWrap = mk('div', 'ip-items' + (wide ? ' ip-items--wide' : ''));
           for (var i = 0; i < items.length; i++) itemsWrap.appendChild(buildItem(items[i], i));
-          wrap.appendChild(itemsWrap);
+          note.appendChild(itemsWrap);
+          wrap.appendChild(note);
         }
         if (subs.length) {
-          var subWrap = mk('div', 'ip-subs');
-          subWrap.appendChild(mkText('div', 'ip-subs-title', '音位分析'));
+          var subWrap = mk('div', 'ip-sec ip-subs');
+          subWrap.appendChild(sectionBar('音位分析', subs.length + ' 小题'));
           for (var j = 0; j < subs.length; j++) subWrap.appendChild(buildSub(subs[j], j));
           wrap.appendChild(subWrap);
         }
         if (!items.length && !subs.length) {
-          wrap.appendChild(mkText('div', 'empty', '本题暂无需要作答的内容'));
+          wrap.appendChild(mkText('div', 'empty', '本题无需作答'));
         }
         root.appendChild(wrap);
         document.addEventListener('pointerdown', onDocPointerDown, true);
@@ -837,7 +904,7 @@
       if (!state) return;
       for (var i = 0; i < state.inputs.length; i++) state.inputs[i].value = '';
       for (var j = 0; j < state.subInputs.length; j++) state.subInputs[j].value = '';
-      for (var k = 0; k < state.subUi.length; k++) setText(state.subUi[k].meta, '0 字 · 建议分点作答');
+      for (var k = 0; k < state.subUi.length; k++) setText(state.subUi[k].meta, '0 字');
       state.lastInput = null;
       state.caret = null;
       refreshAll();

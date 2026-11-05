@@ -195,3 +195,57 @@
   .about-item { flex-direction: column; gap: 4px; }
   .about-k { flex: none; }
 }
+
+/* ---------- 练习页：信息层级与分区 ---------- */
+.section-band {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 20px 2px 10px;
+}
+.section-band:first-child { margin-top: 4px; }
+.section-band-mark {
+  position: relative;
+  padding-left: 11px;
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: var(--ink);
+}
+.section-band-mark::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 3px; bottom: 3px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+.q-meta-line { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.q-source { font-size: 12px; color: var(--ink-soft); }
+.q-detail { flex-basis: 100%; }
+.q-tags-line {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+  margin-top: 10px; padding-top: 9px;
+  border-top: 1px dashed var(--line);
+}
+.q-head .prompt-text { margin-top: 12px; }
+.stage-box {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.stage-label {
+  display: flex; align-items: baseline; gap: 10px;
+  margin-bottom: 8px;
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  letter-spacing: .05em;
+}
+.solution-card .card-hd { border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 12px; }
+@media (max-width: 620px) {
+  .section-band { margin: 16px 2px 8px; }
+  .practice-card { padding: 16px 14px 12px; }
+}

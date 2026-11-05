@@ -418,7 +418,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '承接', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层承接；叶子为分句，标点留在前一分句末尾）'
+      note: '模拟题（第一层因果，第二层承接；叶子为分句，标点留在前一分句末尾）'
     },
     {
       id: 'sy-0138',
@@ -429,7 +429,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '转折', '递进', '长句'],
-      note: '模拟题（参考答案：第一层转折，第二层递进）'
+      note: '模拟题（第一层转折，第二层递进）'
     },
     {
       id: 'sy-0139',
@@ -440,7 +440,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '条件', '因果', '长句'],
-      note: '模拟题（参考答案：按「最宽跨度作第一层」，第一层条件，第二层因果）'
+      note: '模拟题（按「最宽跨度作第一层」，第一层条件，第二层因果）'
     },
     {
       id: 'sy-0140',
@@ -451,7 +451,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '递进', '并列'],
-      note: '模拟题（参考答案：第一层递进，第二层并列）'
+      note: '模拟题（第一层递进，第二层并列）'
     },
     {
       id: 'sy-0141',
@@ -462,7 +462,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '让步', '因果', '长句'],
-      note: '模拟题（参考答案：按「最宽跨度作第一层」，第一层让步，第二层因果）'
+      note: '模拟题（按「最宽跨度作第一层」，第一层让步，第二层因果）'
     },
     {
       id: 'sy-0142',
@@ -473,7 +473,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '承接', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层承接）'
+      note: '模拟题（第一层因果，第二层承接）'
     },
     {
       id: 'sy-0143',
@@ -484,7 +484,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '条件', '并列'],
-      note: '模拟题（参考答案：第一层条件，第二层并列）'
+      note: '模拟题（第一层条件，第二层并列）'
     },
     {
       id: 'sy-0144',
@@ -495,7 +495,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '转折', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层转折）'
+      note: '模拟题（第一层因果，第二层转折）'
     },
     {
       id: 'sy-0145',
@@ -506,7 +506,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '递进', '选择', '长句'],
-      note: '模拟题（参考答案：第一层递进，第二层选择）'
+      note: '模拟题（第一层递进，第二层选择）'
     },
     {
       id: 'sy-0146',
@@ -517,7 +517,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '解说', '递进', '长句'],
-      note: '模拟题（参考答案：第一层解说，第二层递进）'
+      note: '模拟题（第一层解说，第二层递进）'
     },
     {
       id: 'sy-0147',
@@ -528,7 +528,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '目的', '因果', '长句'],
-      note: '模拟题（参考答案：第一层目的，第二层因果）'
+      note: '模拟题（第一层目的，第二层因果）'
     },
     {
       id: 'sy-0148',
@@ -539,7 +539,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '解说', '选择', '长句'],
-      note: '模拟题（参考答案：第一层解说，第二层选择）'
+      note: '模拟题（第一层解说，第二层选择）'
     },
     {
       id: 'sy-0149',
@@ -550,7 +550,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '假设', '承接'],
-      note: '模拟题（参考答案：第一层假设，第二层承接）'
+      note: '模拟题（第一层假设，第二层承接）'
     },
     {
       id: 'sy-0150',
@@ -561,7 +561,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '转折', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层转折）'
+      note: '模拟题（第一层因果，第二层转折）'
     },
     {
       id: 'sy-0151',
@@ -572,7 +572,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '让步', '并列', '长句'],
-      note: '模拟题（参考答案：第一层让步，第二层并列）'
+      note: '模拟题（第一层让步，第二层并列）'
     },
     {
       id: 'sy-0152',
@@ -583,7 +583,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '条件', '因果', '长句'],
-      note: '模拟题（参考答案：按「最宽跨度作第一层」，第一层条件，第二层因果）'
+      note: '模拟题（按「最宽跨度作第一层」，第一层条件，第二层因果）'
     },
     {
       id: 'sy-0153',
@@ -594,7 +594,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '递进', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层递进）'
+      note: '模拟题（第一层因果，第二层递进）'
     },
     {
       id: 'sy-0154',
@@ -605,7 +605,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '转折', '并列'],
-      note: '模拟题（参考答案：第一层转折，第二层并列）'
+      note: '模拟题（第一层转折，第二层并列）'
     },
     {
       id: 'sy-0155',
@@ -616,7 +616,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '目的', '承接'],
-      note: '模拟题（参考答案：第一层目的，第二层承接）'
+      note: '模拟题（第一层目的，第二层承接）'
     },
     {
       id: 'sy-0156',
@@ -627,7 +627,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '解说', '承接', '长句'],
-      note: '模拟题（参考答案：第一层解说，第二层承接，同层多分句用多分节点）'
+      note: '模拟题（第一层解说，第二层承接，同层多分句用多分节点）'
     },
     {
       id: 'sy-0157',
@@ -638,7 +638,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '假设', '并列', '让步'],
-      note: '模拟题（参考答案：第一层假设，第二层前为并列、后为让步）'
+      note: '模拟题（第一层假设，第二层前为并列、后为让步）'
     },
     {
       id: 'sy-0158',
@@ -649,7 +649,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '假设', '递进', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层假设与因果，第三层递进——三重复句）'
+      note: '模拟题（第一层因果，第二层假设与因果，第三层递进——三重复句）'
     },
     {
       id: 'sy-0159',
@@ -660,7 +660,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '转折', '承接', '因果', '长句'],
-      note: '模拟题（参考答案：按「最宽跨度作第一层」，第一层转折、第二层承接、第三层因果——三重复句）'
+      note: '模拟题（按「最宽跨度作第一层」，第一层转折、第二层承接、第三层因果——三重复句）'
     },
     {
       id: 'sy-0160',
@@ -671,7 +671,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '递进', '让步', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层递进，第三层让步——三重复句）'
+      note: '模拟题（第一层因果，第二层递进，第三层让步——三重复句）'
     },
 
     /* ================= 四、自编复杂单句 / 特殊句式（模拟题，8–25 字） ================= */
@@ -1272,7 +1272,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '并列', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层并列）'
+      note: '模拟题（第一层因果，第二层并列）'
     },
     {
       id: 'sy-0214',
@@ -1283,7 +1283,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '转折', '因果', '长句'],
-      note: '模拟题（参考答案：第一层转折，第二层因果）'
+      note: '模拟题（第一层转折，第二层因果）'
     },
     {
       id: 'sy-0215',
@@ -1294,7 +1294,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '递进', '长句'],
-      note: '模拟题（参考答案：第一层递进，第二层递进）'
+      note: '模拟题（第一层递进，第二层递进）'
     },
     {
       id: 'sy-0216',
@@ -1305,7 +1305,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '条件', '并列'],
-      note: '模拟题（参考答案：第一层条件，第二层并列）'
+      note: '模拟题（第一层条件，第二层并列）'
     },
     {
       id: 'sy-0217',
@@ -1316,7 +1316,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '让步', '递进', '长句'],
-      note: '模拟题（参考答案：第一层让步，第二层递进）'
+      note: '模拟题（第一层让步，第二层递进）'
     },
     {
       id: 'sy-0218',
@@ -1327,7 +1327,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '目的', '递进', '长句'],
-      note: '模拟题（参考答案：第一层目的，第二层递进）'
+      note: '模拟题（第一层目的，第二层递进）'
     },
     {
       id: 'sy-0219',
@@ -1338,7 +1338,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '假设', '并列'],
-      note: '模拟题（参考答案：第一层假设，第二层并列）'
+      note: '模拟题（第一层假设，第二层并列）'
     },
     {
       id: 'sy-0220',
@@ -1349,7 +1349,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '选择', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层选择）'
+      note: '模拟题（第一层因果，第二层选择）'
     },
     {
       id: 'sy-0221',
@@ -1360,7 +1360,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '解说', '递进', '长句'],
-      note: '模拟题（参考答案：第一层解说，第二层递进）'
+      note: '模拟题（第一层解说，第二层递进）'
     },
     {
       id: 'sy-0222',
@@ -1371,7 +1371,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '转折', '递进', '长句'],
-      note: '模拟题（参考答案：第一层转折，第二层递进）'
+      note: '模拟题（第一层转折，第二层递进）'
     },
     {
       id: 'sy-0223',
@@ -1382,7 +1382,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '承接', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层承接）'
+      note: '模拟题（第一层因果，第二层承接）'
     },
     {
       id: 'sy-0224',
@@ -1393,7 +1393,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '假设', '承接'],
-      note: '模拟题（参考答案：第一层假设，第二层承接）'
+      note: '模拟题（第一层假设，第二层承接）'
     },
     {
       id: 'sy-0225',
@@ -1404,7 +1404,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '并列', '假设', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层并列，第三层假设——三重复句）'
+      note: '模拟题（第一层因果，第二层并列，第三层假设——三重复句）'
     },
     {
       id: 'sy-0226',
@@ -1415,7 +1415,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '让步', '递进', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层让步，第三层递进——三重复句）'
+      note: '模拟题（第一层因果，第二层让步，第三层递进——三重复句）'
     },
     {
       id: 'sy-0227',
@@ -1426,7 +1426,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '假设', '并列', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层假设，第三层并列——三重复句）'
+      note: '模拟题（第一层因果，第二层假设，第三层并列——三重复句）'
     },
     {
       id: 'sy-0228',
@@ -1437,7 +1437,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '条件', '并列'],
-      note: '模拟题（参考答案：第一层条件（无条件），第二层并列）'
+      note: '模拟题（第一层条件（无条件），第二层并列）'
     },
     {
       id: 'sy-0229',
@@ -1448,7 +1448,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '并列', '假设', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层前为并列、后为假设）'
+      note: '模拟题（第一层因果，第二层前为并列、后为假设）'
     },
     {
       id: 'sy-0230',
@@ -1459,7 +1459,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '承接', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层承接，同层多分句用多分节点）'
+      note: '模拟题（第一层因果，第二层承接，同层多分句用多分节点）'
     },
 
     /* ---------- 5.3 自编复杂单句 / 特殊句式（sy-0231–sy-0246） ---------- */
@@ -1821,7 +1821,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '目的'],
-      note: '教材习题：黄伯荣、廖序东《现代汉语》第六版 下册 第四章 语法·思考和练习八 第一题（参考答案：目的复句，一重）'
+      note: '教材习题：黄伯荣、廖序东《现代汉语》第六版 下册 第四章 语法·思考和练习八 第一题（目的复句，一重）'
     },
     {
       id: 'sy-0412',
@@ -1946,7 +1946,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '转折', '因果'],
-      note: '教材习题：黄伯荣、廖序东《现代汉语》第六版 下册 第四章 语法·思考和练习八 第三题①（参考答案：第一层转折，第二层因果）'
+      note: '教材习题：黄伯荣、廖序东《现代汉语》第六版 下册 第四章 语法·思考和练习八 第三题①（第一层转折，第二层因果）'
     },
     {
       id: 'sy-0422',
@@ -1957,7 +1957,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '假设', '条件'],
-      note: '教材习题：黄伯荣、廖序东《现代汉语》第六版 下册 第四章 语法·思考和练习八 第三题②（参考答案：第一层假设，第二层条件（无条件））'
+      note: '教材习题：黄伯荣、廖序东《现代汉语》第六版 下册 第四章 语法·思考和练习八 第三题②（第一层假设，第二层条件（无条件））'
     },
     {
       id: 'sy-0423',
@@ -1968,7 +1968,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '并列', '条件'],
-      note: '教材习题：黄伯荣、廖序东《现代汉语》第六版 下册 第四章 语法·思考和练习八 第三题③（参考答案：第一层并列（正反对举），第二层均为条件）'
+      note: '教材习题：黄伯荣、廖序东《现代汉语》第六版 下册 第四章 语法·思考和练习八 第三题③（第一层并列（正反对举），第二层均为条件）'
     },
     {
       id: 'sy-0424',
@@ -1979,7 +1979,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '解说', '并列', '假设'],
-      note: '教材习题：黄伯荣、廖序东《现代汉语》第六版 下册 第四章 语法·思考和练习八 第三题④（参考答案：第一层解说，第二层并列，第三层假设——三重复句）'
+      note: '教材习题：黄伯荣、廖序东《现代汉语》第六版 下册 第四章 语法·思考和练习八 第三题④（第一层解说，第二层并列，第三层假设——三重复句）'
     },
     {
       id: 'sy-0425',
@@ -1990,7 +1990,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '转折', '递进', '长句'],
-      note: '教材习题：黄伯荣、廖序东《现代汉语》第六版 下册 第四章 语法·思考和练习八 第三题⑥（参考答案：第一层转折，第二层递进）'
+      note: '教材习题：黄伯荣、廖序东《现代汉语》第六版 下册 第四章 语法·思考和练习八 第三题⑥（第一层转折，第二层递进）'
     },
     {
       id: 'sy-0426',
@@ -2001,7 +2001,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '解说', '并列', '长句'],
-      note: '教材习题：黄伯荣、廖序东《现代汉语》第六版 下册 第四章 语法·思考和练习八 第三题⑩（参考答案：第一层解说，第二层并列，同层多分）'
+      note: '教材习题：黄伯荣、廖序东《现代汉语》第六版 下册 第四章 语法·思考和练习八 第三题⑩（第一层解说，第二层并列，同层多分）'
     },
     {
       id: 'sy-0427',
@@ -2012,7 +2012,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '解说', '递进'],
-      note: '教材习题：黄伯荣、廖序东《现代汉语》第六版 下册 第四章 语法·思考和练习八 第一题⑫（参考答案：第一层解说，第二层递进）'
+      note: '教材习题：黄伯荣、廖序东《现代汉语》第六版 下册 第四章 语法·思考和练习八 第一题⑫（第一层解说，第二层递进）'
     },
 
     /* ---------- 6.2 北京师范大学真题（sy-0428） ---------- */
@@ -2151,7 +2151,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '并列', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层并列）'
+      note: '模拟题（第一层因果，第二层并列）'
     },
     {
       id: 'sy-0444',
@@ -2162,7 +2162,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '转折', '承接', '长句'],
-      note: '模拟题（参考答案：第一层转折，第二层承接）'
+      note: '模拟题（第一层转折，第二层承接）'
     },
     {
       id: 'sy-0445',
@@ -2173,7 +2173,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '递进', '假设', '长句'],
-      note: '模拟题（参考答案：第一层递进，第二层假设）'
+      note: '模拟题（第一层递进，第二层假设）'
     },
     {
       id: 'sy-0446',
@@ -2184,7 +2184,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '条件', '因果', '长句'],
-      note: '模拟题（参考答案：第一层条件（无条件），第二层因果）'
+      note: '模拟题（第一层条件（无条件），第二层因果）'
     },
     {
       id: 'sy-0447',
@@ -2195,7 +2195,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '目的', '递进', '长句'],
-      note: '模拟题（参考答案：第一层目的，第二层递进）'
+      note: '模拟题（第一层目的，第二层递进）'
     },
     {
       id: 'sy-0448',
@@ -2206,7 +2206,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '解说', '并列'],
-      note: '模拟题（参考答案：第一层解说，第二层并列）'
+      note: '模拟题（第一层解说，第二层并列）'
     },
     {
       id: 'sy-0449',
@@ -2217,7 +2217,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '让步', '递进', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层让步，第三层递进——三重复句）'
+      note: '模拟题（第一层因果，第二层让步，第三层递进——三重复句）'
     },
     {
       id: 'sy-0450',
@@ -2228,7 +2228,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '假设', '并列', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层假设，第三层并列——三重复句）'
+      note: '模拟题（第一层因果，第二层假设，第三层并列——三重复句）'
     },
     {
       id: 'sy-0451',
@@ -2363,7 +2363,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '条件'],
-      note: '教材习题：黄伯荣、廖序东《现代汉语》第六版 下册 第四章 语法·思考和练习八 第一题⑪（参考答案：条件复句，一重）'
+      note: '教材习题：黄伯荣、廖序东《现代汉语》第六版 下册 第四章 语法·思考和练习八 第一题⑪（条件复句，一重）'
     },
     {
       id: 'sy-0502',
@@ -2506,7 +2506,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '递进', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层递进）'
+      note: '模拟题（第一层因果，第二层递进）'
     },
     {
       id: 'sy-0515',
@@ -2517,7 +2517,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '转折', '承接', '长句'],
-      note: '模拟题（参考答案：第一层转折，第二层承接）'
+      note: '模拟题（第一层转折，第二层承接）'
     },
     {
       id: 'sy-0516',
@@ -2528,7 +2528,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '递进', '并列', '长句'],
-      note: '模拟题（参考答案：第一层递进，第二层并列）'
+      note: '模拟题（第一层递进，第二层并列）'
     },
     {
       id: 'sy-0517',
@@ -2539,7 +2539,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '让步', '因果', '长句'],
-      note: '模拟题（参考答案：第一层让步，第二层因果）'
+      note: '模拟题（第一层让步，第二层因果）'
     },
     {
       id: 'sy-0518',
@@ -2550,7 +2550,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '目的', '并列'],
-      note: '模拟题（参考答案：第一层目的，第二层并列）'
+      note: '模拟题（第一层目的，第二层并列）'
     },
     {
       id: 'sy-0519',
@@ -2561,7 +2561,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '解说', '递进'],
-      note: '模拟题（参考答案：第一层解说，第二层递进）'
+      note: '模拟题（第一层解说，第二层递进）'
     },
     {
       id: 'sy-0520',
@@ -2572,7 +2572,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '假设', '因果', '长句'],
-      note: '模拟题（参考答案：第一层假设，第二层因果）'
+      note: '模拟题（第一层假设，第二层因果）'
     },
     {
       id: 'sy-0521',
@@ -2583,7 +2583,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '解说', '选择'],
-      note: '模拟题（参考答案：第一层解说，第二层选择）'
+      note: '模拟题（第一层解说，第二层选择）'
     },
     {
       id: 'sy-0522',
@@ -2594,7 +2594,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '并列', '假设', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层并列，第三层假设——三重复句）'
+      note: '模拟题（第一层因果，第二层并列，第三层假设——三重复句）'
     },
     {
       id: 'sy-0523',
@@ -2605,7 +2605,7 @@
       relations: 'compound',
       source: { school: '', year: 0, real: false },
       tags: ['复句', '因果', '转折', '递进', '长句'],
-      note: '模拟题（参考答案：第一层因果，第二层转折，第三层递进——三重复句）'
+      note: '模拟题（第一层因果，第二层转折，第三层递进——三重复句）'
     },
     {
       id: 'sy-0524',

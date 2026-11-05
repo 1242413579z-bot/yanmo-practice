@@ -11,7 +11,7 @@
     var head = UI.el('div', { class: 'page-head' }, [
       UI.el('div', {}, [
         UI.el('h2', { class: 'page-title' }, 'AI 助教'),
-        UI.el('div', { class: 'page-sub' }, '内置提示词（Skills）会按题目自动调用；也可以在这里自由提问。为省 token，问答不保留历史、单次回答不超过 300 字。')
+        UI.el('div', { class: 'page-sub' }, '内置提示词按题目自动调用，也可自由提问。问答不保留历史，单次回答不超过 300 字。')
       ])
     ]);
     page.appendChild(head);
@@ -30,7 +30,7 @@
     var bar = UI.el('div', { class: 'row', style: { marginTop: '10px' } });
     var sendBtn = UI.el('button', { class: 'btn btn--primary' }, '提问');
     bar.appendChild(sendBtn);
-    bar.appendChild(UI.el('span', { class: 'tiny faint' }, '回答为 AI 生成，仅作思路参考，以教材/真题答案为准'));
+    bar.appendChild(UI.el('span', { class: 'tiny faint' }, '要点以题库解析为准'));
     chatCard.appendChild(bar);
     var answerWrap = UI.el('div', { class: 'ai-area', style: { marginTop: '14px' } });
     chatCard.appendChild(answerWrap);

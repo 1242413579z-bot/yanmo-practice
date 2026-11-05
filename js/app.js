@@ -12,7 +12,7 @@
     syntax: { label: '句法分析', short: '句法', icon: 'syntax', desc: '层次分析法 · 逐刀判分', color: 'jade' },
     ipa: { label: '国际音标', short: '音标', icon: 'ipa', desc: '注音 + 音位分析', color: 'gold' },
     sememe: { label: '义素分析', short: '义素', icon: 'sememe', desc: '义素矩阵 · 逐列比对', color: 'accent' },
-    translate: { label: '古文翻译', short: '翻译', icon: 'translate', desc: '采分点判分 + AI 精评', color: 'accent' },
+    translate: { label: '古文翻译', short: '翻译', icon: 'translate', desc: '采分点判分', color: 'accent' },
     punct: { label: '句读标点', short: '句读', icon: 'punct', desc: '标点弹窗 · 断点判分', color: 'jade' }
   };
   var PAGE_TITLE = {
@@ -116,7 +116,7 @@
       var ok = window.AI && AI.configured();
       e.className = 'badge ' + (ok ? 'badge--jade' : 'badge--mock');
       e.textContent = ok ? 'AI 已连接' : 'AI 未配置';
-      e.title = ok ? ('模型：' + (S.settings.ai.model || 'deepseek-chat')) : '到「设置与说明」填入 DeepSeek API Key';
+      e.title = ok ? ('模型：' + (S.settings.ai.model || 'deepseek-chat')) : '在设置页配置 API Key';
     }
     // 题型计数
     TYPES.forEach(function (t) {
@@ -189,7 +189,7 @@
       if (page) {
         try { page(root); } catch (e) { renderError(root, e); }
       } else {
-        root.appendChild(UI.empty('页面还没准备好', '稍后刷新试试'));
+        root.appendChild(UI.empty('页面未加载', '返回首页继续练习'));
       }
     }
     updateChrome();
@@ -240,8 +240,8 @@
     if (!list.length) {
       crumb(meta.label, '暂无题目');
       App.root.appendChild(UI.el('div', { class: 'card' }, [
-        UI.el('div', { class: 'card-title' }, '题库为空'),
-        UI.el('p', { class: 'small muted' }, '这一类题目还没有生成或过滤后为空。试试切换「来源」筛选。')
+        UI.el('div', { class: 'card-title' }, '筛选题库为空'),
+        UI.el('p', { class: 'small muted' }, '当前筛选条件下没有题目，切换「来源」或「考点」即可继续。')
       ]));
       return;
     }
@@ -259,11 +259,21 @@
     /* --- 顶部信息栏 --- */
     page.appendChild(renderPracticeHead(type, meta, list, q));
 
-    /* --- 题目卡 --- */
+    /* --- 题目卡：来源 → 题干 → 作答区 → 操作 --- */
+    page.appendChild(UI.el('div', { class: 'section-band' }, [
+      UI.el('span', { class: 'section-band-mark' }, '题目'),
+      UI.el('span', { class: 'tiny faint' }, meta.label)
+    ]));
     var qCard = UI.el('div', { class: 'card practice-card' });
     qCard.appendChild(renderQuestionHead(q, meta));
+    var stageBox = UI.el('div', { class: 'stage-box' });
+    stageBox.appendChild(UI.el('div', { class: 'stage-label' }, [
+      UI.el('span', {}, '作答区'),
+      UI.el('span', { class: 'tiny faint' }, '按题干要求完成后提交判分')
+    ]));
     App.stage = UI.el('div', { class: 'stage' });
-    qCard.appendChild(App.stage);
+    stageBox.appendChild(App.stage);
+    qCard.appendChild(stageBox);
     App.actions = UI.el('div', { class: 'btn-row practice-actions' });
     qCard.appendChild(App.actions);
     page.appendChild(qCard);
@@ -339,26 +349,29 @@
 
   function renderQuestionHead(q, meta) {
     var head = UI.el('div', { class: 'q-head' });
-    var srcLine = UI.el('div', { class: 'source-line' });
     var s = q.source || {};
-    if (s.real) {
-      srcLine.appendChild(UI.el('span', { class: 'badge badge--real' }, '真题'));
-      srcLine.appendChild(UI.el('span', { class: 'badge' }, [s.school || '', s.year ? s.year + ' 年' : '', s.code ? s.code : ''].filter(Boolean).join(' ')));
-      if (s.detail) srcLine.appendChild(UI.el('span', { class: 'tiny faint' }, s.detail));
-    } else {
-      srcLine.appendChild(UI.el('span', { class: 'badge badge--mock' }, '模拟题'));
-    }
-    (q.tags || []).forEach(function (t) { srcLine.appendChild(UI.el('span', { class: 'tag' }, t)); });
-    var last = S.getAttempt(q.id);
-    if (last) {
-      srcLine.appendChild(UI.el('span', { class: 'badge ' + (last.correct ? 'badge--jade' : 'badge--red') }, '上次 ' + last.score + ' 分'));
-    }
-    if (q.source && q.source.real && !s.school) srcLine.appendChild(UI.el('span', { class: 'tiny faint' }, '来源待补'));
-    head.appendChild(srcLine);
 
-    var prompt = q.prompt || '';
-    var promptEl = UI.el('div', { class: 'prompt-text', style: { marginTop: '8px' } }, prompt);
-    head.appendChild(promptEl);
+    /* 第一行：题型 + 来源 + 上次成绩 */
+    var metaLine = UI.el('div', { class: 'q-meta-line' });
+    metaLine.appendChild(UI.el('span', { class: 'badge badge--solid' }, meta.label));
+    if (s.real) {
+      metaLine.appendChild(UI.el('span', { class: 'badge badge--real' }, '真题'));
+      metaLine.appendChild(UI.el('span', { class: 'q-source' }, [s.school || '', s.year ? s.year + ' 年' : '', s.code ? s.code : ''].filter(Boolean).join(' · ')));
+    } else {
+      metaLine.appendChild(UI.el('span', { class: 'badge badge--mock' }, '模拟题'));
+    }
+    var last = S.getAttempt(q.id);
+    if (last) metaLine.appendChild(UI.el('span', { class: 'badge ' + (last.correct ? 'badge--jade' : 'badge--red') }, '上次 ' + last.score + ' 分'));
+    head.appendChild(metaLine);
+
+    /* 第二行：题干 */
+    head.appendChild(UI.el('div', { class: 'prompt-text' }, q.prompt || ''));
+
+    /* 第三行：考点 + 出处细目 */
+    var foot = UI.el('div', { class: 'q-tags-line' });
+    (q.tags || []).forEach(function (t) { foot.appendChild(UI.el('span', { class: 'tag' }, t)); });
+    if (s.detail) foot.appendChild(UI.el('span', { class: 'tiny faint q-detail' }, s.detail));
+    if (foot.childNodes.length) head.appendChild(foot);
     return head;
   }
 
@@ -366,7 +379,7 @@
     var mod = window.PRACTICE_MODULES && window.PRACTICE_MODULES[q.type];
     UI.clear(App.stage);
     if (!mod) {
-      App.stage.appendChild(UI.el('div', { class: 'notice notice--bad' }, '「' + (TYPE_META[q.type].label) + '」模块脚本未加载（js/modules/' + q.type + '.js）。'));
+      App.stage.appendChild(UI.el('div', { class: 'notice notice--bad' }, '「' + (TYPE_META[q.type].label) + '」模块未加载'));
       return;
     }
     App.mod = mod;
@@ -410,7 +423,7 @@
     a.appendChild(actionBtn('看答案解析', 'solution', 'ghost'));
     a.appendChild(actionBtn('重做', 'redo', 'ghost'));
     if (type === 'translate') a.appendChild(actionBtn('AI 精评', 'ai-translate', 'gold'));
-    if (type === 'syntax' && (App.q.tags || []).indexOf('歧义') >= 0) a.appendChild(actionBtn('歧义多解', 'ambiguity', 'ghost'));
+    if (type === 'syntax' && (App.q.tags || []).indexOf('歧义') >= 0) a.appendChild(actionBtn('多解分析', 'ambiguity', 'ghost'));
     a.appendChild(actionBtn(fav ? '★ 已收藏' : '☆ 收藏', 'fav', 'ghost'));
     var spacer = UI.el('span', { class: 'grow' });
     a.appendChild(spacer);
@@ -442,8 +455,8 @@
 
   function gotoOffset(d) {
     var i = App.idx + d;
-    if (i < 0) { UI.toast('已经是第一题了'); return; }
-    if (i >= App.list.length) { UI.toast('这一类的题刷完了，去别的题型看看吧', 'ok'); return; }
+    if (i < 0) { UI.toast('已到第一题'); return; }
+    if (i >= App.list.length) { UI.toast('本题型已刷完', 'ok'); return; }
     App.idx = i;
     savePos(App.type, i);
     renderPractice();
@@ -500,13 +513,17 @@
     var wrap = App.resultWrap;
     UI.clear(wrap);
     wrap.classList.remove('hidden');
+    wrap.appendChild(UI.el('div', { class: 'section-band' }, [
+      UI.el('span', { class: 'section-band-mark' }, '判分结果'),
+      UI.el('span', { class: 'tiny faint' }, grade.score + ' 分')
+    ]));
     var band = grade.score >= 80 ? 'good' : grade.score >= 60 ? 'warn' : 'bad';
     var card = UI.el('div', { class: 'card result-card is-' + band });
     var hd = UI.el('div', { class: 'result-hd' });
     hd.appendChild(UI.ring(grade.score));
     var meta = UI.el('div', { class: 'score-meta' });
     var title = UI.el('div', { class: 'score-title' });
-    title.appendChild(UI.el('span', {}, grade.score >= 100 ? '满分，漂亮！' : grade.score >= 80 ? '过关' : grade.score >= 60 ? '差一点' : '需要重练'));
+    title.appendChild(UI.el('span', {}, grade.score >= 100 ? '满分' : grade.score >= 80 ? '过关' : grade.score >= 60 ? '差一点' : '需要重练'));
     title.appendChild(UI.el('span', { class: 'badge badge--' + (band === 'good' ? 'jade' : band === 'warn' ? 'gold' : 'red') }, GC.band(grade.score).tag));
     if (App.submitted && grade.summary) title.appendChild(UI.el('span', { class: 'small faint' }, '· ' + grade.summary));
     meta.appendChild(title);
@@ -538,7 +555,7 @@
       if (grade.errors.length > 14) list.appendChild(UI.el('div', { class: 'tiny faint' }, '还有 ' + (grade.errors.length - 14) + ' 处小问题…'));
       card.appendChild(list);
     } else if (grade.score >= 100) {
-      card.appendChild(UI.el('div', { class: 'ok-chip', style: { marginTop: '12px' } }, '✓ 这一题没有发现错误'));
+      card.appendChild(UI.el('div', { class: 'ok-chip', style: { marginTop: '12px' } }, '✓ 全部正确'));
     }
 
     // 模块专属细节
@@ -563,14 +580,14 @@
     var ok = window.AI && AI.configured();
     var enabled = S.settings.ai.autoAnalyze;
     if (!enabled) {
-      App.aiWrap.appendChild(UI.el('div', { class: 'tiny faint' }, 'AI 归因已关闭（可在设置里打开）。'));
+      App.aiWrap.appendChild(UI.el('div', { class: 'tiny faint' }, 'AI 归因已关闭。'));
       return;
     }
     if (!ok) {
       App.aiWrap.appendChild(UI.el('div', { class: 'notice' }, [
         UI.el('span', {}, '💡 '),
-        UI.el('span', {}, ['配好 DeepSeek API Key 后，做错的题会自动', UI.el('b', {}, '归类错因 + 给一句话点拨'), '，并且同一答案只花一次 token。'],
-          UI.el('a', { href: '#/settings', style: { marginLeft: '6px' } }, '去设置 →'))
+        UI.el('span', {}, ['配置 Key 后，做错的题自动', UI.el('b', {}, '归类错因 + 给一句话点拨'), '，同一答案命中缓存不重复调用。'],
+          UI.el('a', { href: '#/settings', style: { marginLeft: '6px' } }, '设置 →'))
       ]));
     }
   }
@@ -580,7 +597,7 @@
     UI.clear(App.aiWrap);
     App.aiWrap.appendChild(UI.el('div', { class: 'ai-box' }, [
       UI.el('div', { class: 'ai-hd' }, [UI.el('span', { class: 'spark' }, '✦'), UI.el('span', {}, label || 'AI 正在归类错因…')]),
-      UI.el('div', { class: 'ai-loading' }, [UI.el('span', { class: 'spinner' }), UI.el('span', {}, '对比你的答案与标准答案（结果会缓存，不重复计费）')])
+      UI.el('div', { class: 'ai-loading' }, [UI.el('span', { class: 'spinner' }), UI.el('span', {}, '对比作答与标准答案')])
     ]));
   }
 
@@ -595,7 +612,7 @@
       if (!App.aiWrap) return;
       UI.clear(App.aiWrap);
       if (!r || !r.ok) {
-        App.aiWrap.appendChild(UI.el('div', { class: 'notice notice--bad' }, 'AI 分析不可用：' + (r && r.message ? r.message : '未知错误') + '（离线判分结果不受影响）'));
+        App.aiWrap.appendChild(UI.el('div', { class: 'notice notice--bad' }, 'AI 分析不可用：' + (r && r.message ? r.message : '未知错误')));
         return;
       }
       App.aiWrap.appendChild(renderAIResult(r, 'AI 错因归类'));
@@ -641,9 +658,9 @@
   }
 
   function runTranslateAI() {
-    if (!window.AI || !AI.configured()) { UI.toast('请先在设置页配置 DeepSeek API Key', 'bad'); go('settings'); return; }
+    if (!window.AI || !AI.configured()) { UI.toast('先在设置页配置 API Key', 'bad'); go('settings'); return; }
     var ans = App.submitted ? App.submitted.answer : App.mod.getAnswer();
-    if (!ans || !ans.text || ans.text.trim().length < 5) { UI.toast('先写一段译文再点 AI 精评'); return; }
+    if (!ans || !ans.text || ans.text.trim().length < 5) { UI.toast('先写一段译文'); return; }
     renderAILoading('AI 正在逐句批改译文…');
     AI.reviewTranslate({ question: App.q, userText: ans.text }).then(function (r) {
       if (!App.aiWrap) return;
@@ -685,7 +702,7 @@
   }
 
   function runAmbiguity() {
-    if (!window.AI || !AI.configured()) { UI.toast('请先在设置页配置 API Key', 'bad'); return; }
+    if (!window.AI || !AI.configured()) { UI.toast('先在设置页配置 API Key', 'bad'); return; }
     renderAILoading('AI 正在分析歧义结构…');
     AI.ambiguity(App.q.sentence || '').then(function (r) {
       if (!App.aiWrap) return;
@@ -711,11 +728,14 @@
     UI.clear(wrap);
     wrap.classList.remove('hidden');
     var ans = App.submitted ? App.submitted.answer : null;
+    wrap.appendChild(UI.el('div', { class: 'section-band' }, [
+      UI.el('span', { class: 'section-band-mark' }, '答案与解析'),
+      UI.el('span', { class: 'tiny faint' }, App.q.note || '')
+    ]));
     var card = UI.el('div', { class: 'card solution-card' });
     var hd = UI.el('div', { class: 'card-hd' }, [
       UI.el('div', { class: 'grow' }, [
-        UI.el('div', { class: 'section-title', style: { margin: '0' } }, '答案与解析'),
-        UI.el('div', { class: 'card-sub' }, App.q.note || '参考答案')
+        UI.el('div', { class: 'section-title', style: { margin: '0' } }, '标准答案与解析')
       ]),
       UI.el('button', { class: 'btn btn--sm btn--ghost', onclick: function () { wrap.classList.add('hidden'); } }, '收起')
     ]);
@@ -744,7 +764,7 @@
     mountModule(App.q);
     renderActions();
     updateChrome();
-    UI.toast('已清空，重新做一遍');
+    UI.toast('已清空，可重新作答');
   }
   App.redo = redoQuestion;
 
@@ -797,7 +817,7 @@
     // 数据体检提示
     var total = TYPES.reduce(function (s, t) { return s + allOf(t).length; }, 0);
     if (total === 0) {
-      UI.toast('题库还没加载：请确认 js/data/*.js 已生成', 'bad');
+      UI.toast('题库未加载', 'bad');
     }
   }
 

@@ -239,10 +239,19 @@
   }
 
   /* ---------------- 国际音标 ---------------- */
-  var IPA_INITIALS = ['tɕʰ', 'tɕ', 'ʈʂʰ', 'ʈʂ', 'tsʰ', 'ts', 'pʰ', 'tʰ', 'kʰ', 'ɖʐ', 'p', 'm', 'f', 't', 'n', 'l', 'k', 'x', 'ɕ', 's', 'ʂ', 'ʐ', 'ŋ', 'ɻ', 'j', 'w', 'ɥ'];
-  // 元音符号（含国际音标全元音表常用符号；A 为开央不圆唇元音）
+  // 声母/辅音：普通话声母在前（长的先匹配），其后是音标面板提供的国际音标常用辅音。
+  // tʂ / tʂʰ 是题库旧写法，作为可接受别名保留，归一到 ʈʂ / ʈʂʰ。
+  var IPA_INITIALS = [
+    'tɕʰ', 'tɕ', 'ʈʂʰ', 'ʈʂ', 'tʂʰ', 'tʂ', 'tsʰ', 'ts', 'pʰ', 'tʰ', 'kʰ', 'ɖʐ',
+    'p', 'm', 'f', 't', 'n', 'l', 'k', 'x', 'ɕ', 's', 'ʂ', 'ʐ', 'ŋ', 'ɻ', 'j', 'w', 'ɥ',
+    'b', 'd', 'g', 'ɡ', 'ʔ', 'ɸ', 'β', 'v', 'θ', 'ð', 'z', 'ʒ', 'ʃ', 'ç', 'ʝ', 'ɣ',
+    'ɦ', 'h', 'ɬ', 'ɮ', 'r', 'ɾ', 'ɽ', 'ʀ', 'ɱ', 'ɴ', 'ɲ', 'ɳ', 'ʈ', 'ɖ', 'ɟ',
+    'ʡ', 'ʕ', 'ʜ', 'ɺ', 'ʍ', 'ɰ'
+  ];
+  // 元音符号（含国际音标全元音表常用符号；A 为开央不圆唇元音，ɚ 为儿化元音）
   var IPA_VOWEL_SYMBOLS = 'aiyɨʉɯuɪʏʊeøɘɵɤoəɛœɜɞʌɔæɐaɶɑɒAɚɿʅʮɥ'.split('');
-  var IPA_FINAL_CHARS = IPA_VOWEL_SYMBOLS.concat('nŋmɻ̃˞ɹ'.split(''));
+  // 韵尾与附加符号：儿化的 r / ɻ / ɚ、鼻化与卷舌符号、送气上标等都要能通过校验
+  var IPA_FINAL_CHARS = IPA_VOWEL_SYMBOLS.concat('nŋmɻɹr̃˞ʰʲʷː'.split(''));
   var IPA_VOWELS = IPA_VOWEL_SYMBOLS;
   var TONE_DIGIT_RE = /(214|55|35|51|21|0|1|2|3|4|5)$/;
   function toneToDigits(t) {
@@ -259,9 +268,14 @@
     s = String(s).trim();
     s = s.replace(/^[\[【/／\\]+|[\]】/／\\]+$/g, '');
     s = s.replace(/ː/g, '').replace(/\u02D0/g, '');
+    s = s.replace(/tʂ/g, 'ʈʂ');                 // 旧写法与现行 IPA 舌尖后音归一
     s = s.replace(/[，,、;；]/g, ' ');
     s = s.replace(/\s+/g, ' ').trim();
     return s;
+  }
+  // 声母归一：旧写法、ɡ/g 异体在判分时视为同一辅音
+  function canonInitial(s) {
+    return String(s || '').replace(/^tʂʰ$/, 'ʈʂʰ').replace(/^tʂ$/, 'ʈʂ').replace(/ɡ/g, 'g');
   }
   // 'pʰiɛn51' → {initial:'pʰ', final:'iɛn', tone:'51'}
   // 支持儿化写法的两种顺序：'xua55ɚ'（声调在 ɚ 前）与 'xuaɚ55'（声调在末尾）
@@ -269,6 +283,10 @@
   function parseSyllable(tok) {
     tok = String(tok || '').trim();
     if (!tok) return { ok: false, err: '空音节', raw: tok };
+    // 儿化的 r 写法与「ɚ/ɻ 写在调值前」的写法先归一到「调值 + ɚ」
+    tok = tok.replace(/r(?=(?:214|55|35|51|21|0)?$)/, 'ɻ');
+    var mEr = tok.match(/^(.*?)([ɚɻ])((?:214|55|35|51|21|0|[˥˦˧˨˩]{1,5}))$/);
+    if (mEr && mEr[1]) tok = mEr[1] + mEr[3] + mEr[2];
     var erhua = '';
     if (/(ɚ|ɻ)$/.test(tok)) { erhua = tok.slice(-1); tok = tok.slice(0, -1); }
     var tone = '';
@@ -284,9 +302,9 @@
     }
     var initial = '';
     for (var i = 0; i < IPA_INITIALS.length; i++) {
-      if (body.indexOf(IPA_INITIALS[i]) === 0) { initial = IPA_INITIALS[i]; body = body.slice(initial.length); break; }
+      if (body.indexOf(IPA_INITIALS[i]) === 0) { initial = canonInitial(IPA_INITIALS[i]); body = body.slice(IPA_INITIALS[i].length); break; }
     }
-    var final = body + erhua;
+    var final = (body + erhua).replace(/ɡ/g, 'g');
     var okChars = final.split('').every(function (c) { return IPA_FINAL_CHARS.indexOf(c) >= 0 || c === 'ʰ'; });
     var hasVowel = IPA_VOWELS.some(function (v) { return final.indexOf(v) >= 0; });
     return {

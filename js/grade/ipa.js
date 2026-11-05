@@ -111,10 +111,11 @@
     if (/\s{2,}/.test(t)) issues++;                     // 连续空格（首尾单空格已统一 trim，不计）
     if (/\t|\n/.test(t)) issues++;                      // 换行/制表
     if (/[，,、;；]/.test(t)) issues++;                  // 中文标点当分隔符
-    // r 用作儿化/卷舌（ʂər51）不算拼音混用；其余 r 以及 b d g q z c ü 计一笔
+    // 只把普通话国际音标不用的拼音专用字母判为混用；b/d/ɡ/z/r 等本身是
+    // 合法 IPA 辅音（面板会插入），A 是开央不圆唇元音，均不计规范问题。
     var probe = t.replace(/r(?=(?:[0-9]|˥|˦|˧|˨|˩|$))/g, '');
-    if (/[bdgqzcrü]/i.test(probe.replace(/[0-9\s]/g, ''))) issues++; // 拼音字母混用
-    if (/[A-Z]/.test(t)) issues++;                      // 大写
+    if (/[qü]/i.test(probe)) issues++;
+    if (/[B-Z]/.test(t)) issues++;                      // 大写（A 除外）
     return clamp(1 - 0.5 * issues, 0, 1);
   }
 
@@ -197,7 +198,7 @@
         rec.codes.push('ip_norm');
         errors.push(GC.err('ipa', 'ip_norm', {
           item: idx, text: text,
-          detail: '「' + label + '」标写不够规范（多余空格 / 中文标点分隔 / 拼音字母混用等），已按 10% 扣分'
+          detail: '「' + label + '」标写不规范（空格 / 分隔符 / 字符混用），规范项扣分'
         }));
       }
       reviewItems.push(rec);
@@ -232,7 +233,7 @@
       reviewItems.push(rec);
       errors.push(GC.err('ipa', 'ip_norm', {
         item: idx, text: text, expected: answer, got: raw,
-        detail: '「' + label + '」无法解析为规范国际音标（' + ((badUser && badUser.err) || '空音节') + '），整项不得分'
+        detail: '「' + label + '」无法解析为音标音节（' + ((badUser && badUser.err) || '空音节') + '）'
       }));
       return 0;
     }
